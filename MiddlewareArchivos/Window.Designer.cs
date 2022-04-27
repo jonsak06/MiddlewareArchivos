@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btnCrearCarpetas = new System.Windows.Forms.Button();
-            this.btnGenerarEmpresas = new System.Windows.Forms.Button();
             this.btnProcesarArchivosIn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -43,19 +42,9 @@
             this.btnCrearCarpetas.UseVisualStyleBackColor = true;
             this.btnCrearCarpetas.Click += new System.EventHandler(this.btnCrearCarpetas_Click);
             // 
-            // btnGenerarEmpresas
-            // 
-            this.btnGenerarEmpresas.Location = new System.Drawing.Point(12, 86);
-            this.btnGenerarEmpresas.Name = "btnGenerarEmpresas";
-            this.btnGenerarEmpresas.Size = new System.Drawing.Size(483, 68);
-            this.btnGenerarEmpresas.TabIndex = 1;
-            this.btnGenerarEmpresas.Text = "Generar empresas y archivos .ctrlsec";
-            this.btnGenerarEmpresas.UseVisualStyleBackColor = true;
-            this.btnGenerarEmpresas.Click += new System.EventHandler(this.btnGenerarEmpresas_Click);
-            // 
             // btnProcesarArchivosIn
             // 
-            this.btnProcesarArchivosIn.Location = new System.Drawing.Point(12, 160);
+            this.btnProcesarArchivosIn.Location = new System.Drawing.Point(12, 86);
             this.btnProcesarArchivosIn.Name = "btnProcesarArchivosIn";
             this.btnProcesarArchivosIn.Size = new System.Drawing.Size(483, 68);
             this.btnProcesarArchivosIn.TabIndex = 2;
@@ -68,9 +57,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(507, 450);
+            this.ClientSize = new System.Drawing.Size(507, 357);
             this.Controls.Add(this.btnProcesarArchivosIn);
-            this.Controls.Add(this.btnGenerarEmpresas);
             this.Controls.Add(this.btnCrearCarpetas);
             this.MaximizeBox = false;
             this.Name = "Window";
@@ -83,7 +71,6 @@
         #endregion
 
         private Button btnCrearCarpetas;
-        private Button btnGenerarEmpresas;
         private Button btnProcesarArchivosIn;
     }
 }

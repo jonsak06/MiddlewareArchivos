@@ -21,17 +21,7 @@ namespace MiddlewareArchivos
 
         private void Window_Load(object sender, EventArgs e)
         {
-
-        }
-
-        private void btnCrearCarpetas_Click(object sender, EventArgs e)
-        {
-            this.carpetasController.crearCarpetas();
-            MessageBox.Show("Carpetas creadas");
-        }
-
-        private void btnGenerarEmpresas_Click(object sender, EventArgs e)
-        {
+            //creación de instancias de empresas
             XDocument xmlEmpresas = provider.GetDocument(EnumArchivosXML.Empresas);
             this.empresas = xmlEmpresas.Root.Elements().Select(e => new Empresa()
             {
@@ -40,6 +30,7 @@ namespace MiddlewareArchivos
                 ManejaSecuencial = bool.Parse(e.Elements().FirstOrDefault(e => e.Name == "Secuencia").Value)
             }).ToList();
 
+            //creación de archivos .ctrlsec
             foreach (Empresa empresa in this.empresas)
             {
                 if (empresa.ManejaSecuencial)
@@ -50,8 +41,15 @@ namespace MiddlewareArchivos
                     }
                 }
             }
-            MessageBox.Show($"Generadas instancias de empresas y archivos .ctrlsec {empresas.Count}");
+            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSeparador());
         }
+
+        private void btnCrearCarpetas_Click(object sender, EventArgs e)
+        {
+            this.carpetasController.crearCarpetas();
+            MessageBox.Show("Carpetas creadas");
+        }
+
 
         private void btnProcesarArchivosIn_Click(object sender, EventArgs e)
         {
@@ -159,6 +157,8 @@ namespace MiddlewareArchivos
                 }
             }
             LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSeparador());
+            MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
+
         }
     }
 }
