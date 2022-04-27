@@ -25,6 +25,7 @@ namespace MiddlewareArchivos
         private void btnCrearCarpetas_Click(object sender, EventArgs e)
         {
             carpetasController.crearCarpetas();
+            MessageBox.Show("Carpetas creadas");
         }
 
         private void btnGenerarEmpresas_Click(object sender, EventArgs e)
@@ -47,6 +48,7 @@ namespace MiddlewareArchivos
                     }
                 }
             }
+            MessageBox.Show("Generadas instancias de empresas y archivos .ctrlsec");
         }
     }
 }

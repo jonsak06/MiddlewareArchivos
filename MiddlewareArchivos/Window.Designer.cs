@@ -48,7 +48,7 @@
             this.btnGenerarEmpresas.Name = "btnGenerarEmpresas";
             this.btnGenerarEmpresas.Size = new System.Drawing.Size(483, 68);
             this.btnGenerarEmpresas.TabIndex = 1;
-            this.btnGenerarEmpresas.Text = "Generar empresas y crear archivos .ctrlsec";
+            this.btnGenerarEmpresas.Text = "Generar empresas y archivos .ctrlsec";
             this.btnGenerarEmpresas.UseVisualStyleBackColor = true;
             this.btnGenerarEmpresas.Click += new System.EventHandler(this.btnGenerarEmpresas_Click);
             // 
@@ -56,9 +56,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(507, 450);
             this.Controls.Add(this.btnGenerarEmpresas);
             this.Controls.Add(this.btnCrearCarpetas);
+            this.MaximizeBox = false;
             this.Name = "Window";
             this.Text = "Middleware de archivos";
             this.Load += new System.EventHandler(this.Window_Load);
