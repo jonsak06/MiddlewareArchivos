@@ -30,6 +30,7 @@
         {
             this.btnCrearCarpetas = new System.Windows.Forms.Button();
             this.btnProcesarArchivosIn = new System.Windows.Forms.Button();
+            this.btnProcesarArchivosOut = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnCrearCarpetas
@@ -52,12 +53,23 @@
             this.btnProcesarArchivosIn.UseVisualStyleBackColor = true;
             this.btnProcesarArchivosIn.Click += new System.EventHandler(this.btnProcesarArchivosIn_Click);
             // 
+            // btnProcesarArchivosOut
+            // 
+            this.btnProcesarArchivosOut.Location = new System.Drawing.Point(12, 160);
+            this.btnProcesarArchivosOut.Name = "btnProcesarArchivosOut";
+            this.btnProcesarArchivosOut.Size = new System.Drawing.Size(483, 68);
+            this.btnProcesarArchivosOut.TabIndex = 3;
+            this.btnProcesarArchivosOut.Text = "Procesar archivos de OUT";
+            this.btnProcesarArchivosOut.UseVisualStyleBackColor = true;
+            this.btnProcesarArchivosOut.Click += new System.EventHandler(this.btnProcesarArchivosOut_Click);
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(507, 357);
+            this.Controls.Add(this.btnProcesarArchivosOut);
             this.Controls.Add(this.btnProcesarArchivosIn);
             this.Controls.Add(this.btnCrearCarpetas);
             this.MaximizeBox = false;
@@ -72,5 +84,6 @@
 
         private Button btnCrearCarpetas;
         private Button btnProcesarArchivosIn;
+        private Button btnProcesarArchivosOut;
     }
 }

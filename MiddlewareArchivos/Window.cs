@@ -50,7 +50,6 @@ namespace MiddlewareArchivos
             MessageBox.Show("Carpetas creadas");
         }
 
-
         private void btnProcesarArchivosIn_Click(object sender, EventArgs e)
         {
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
@@ -159,6 +158,18 @@ namespace MiddlewareArchivos
             LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSeparador());
             MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
 
+        }
+
+        private void btnProcesarArchivosOut_Click(object sender, EventArgs e)
+        {
+            string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
+            foreach (string path in pathsArchivosOut)
+            {
+                string[] splitedPath = path.Split("\\");
+                string nombreArchivo = splitedPath[splitedPath.Length - 1];
+                File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
+                File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
+            }
         }
     }
 }
