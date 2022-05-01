@@ -40,6 +40,9 @@ namespace MiddlewareArchivos.Mappers
             switch (key)
             {
                 case EnumArchivosXML.Empresas: return NombresArchivosXMLConstants.Empresas;
+                case EnumArchivosXML.Interfaces: return NombresArchivosXMLConstants.Interfaces;
+                case EnumArchivosXML.Urls: return NombresArchivosXMLConstants.Urls;
+                case EnumArchivosXML.Usuarios: return NombresArchivosXMLConstants.Usuarios;
                 default: return string.Empty;
             }
         }

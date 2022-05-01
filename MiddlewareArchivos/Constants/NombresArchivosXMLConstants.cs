@@ -9,5 +9,8 @@ namespace MiddlewareArchivos.Constants
     internal class NombresArchivosXMLConstants
     {
         public const string Empresas = "Empresas";
+        public const string Interfaces = "Interfaces";
+        public const string Urls = "Urls";
+        public const string Usuarios = "Usuarios";
     }
 }

@@ -8,6 +8,6 @@ namespace MiddlewareArchivos.Enums
 {
     internal enum EnumArchivosXML
     {
-        Empresas
+        Empresas, Interfaces, Urls, Usuarios
     }
 }
