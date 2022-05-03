@@ -1,6 +1,4 @@
 ﻿using MiddlewareArchivos.Entities;
-using MiddlewareArchivos.Enums;
-using MiddlewareArchivos.Mappers;
 using MiddlewareArchivos.Providers;
 using System;
 using System.Collections.Generic;
@@ -13,9 +11,26 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Controllers
 {
-    internal static class ProcesamientoController
+    internal class ProcesamientoController
     {
-        private static async Task<string> getTokenAutenticacion()
+        private EndpointProvider endpointProvider;
+        private string token;
+
+        private async Task<ProcesamientoController> InitializeAsync()
+        {
+            this.token = await getTokenAutenticacion();
+            return this;
+        }
+        public static Task<ProcesamientoController> CreateAsync()
+        {
+            var ret = new ProcesamientoController();
+            return ret.InitializeAsync();
+        }
+        private ProcesamientoController()
+        {
+            this.endpointProvider = new EndpointProvider();
+        }
+        private async Task<string> getTokenAutenticacion()
         {
             try
             {
@@ -29,42 +44,38 @@ namespace MiddlewareArchivos.Controllers
                 return String.Empty;
             }
         }
-        private static void generarArchivoErr(string nombreArchivo, string pathCarpetaProcesado, string detalles)
+        private void generarArchivoErr(string nombreArchivo, string pathCarpetaProcesado, string detalles)
         {
             throw new NotImplementedException();
         }
-        public static async Task<bool> procesarArchivoIn(Archivo archivo)
+        public async Task<bool> procesarArchivoIn(Archivo archivo)
         {
-            if(InterfacesController.existeInterfaz(archivo.Api))
+            if (InterfacesController.existeInterfaz(archivo.Api))
             {
-                ConfigMapper mapper = new ConfigMapper();
-                EndpointProvider endpointProvider = new EndpointProvider();
-                Debug.WriteLine(endpointProvider.getEndpointPost(archivo.Api));
-                var requestUri = new Uri($"{endpointProvider.getApiGatewayUrl()}{endpointProvider.getEndpointPost(archivo.Api)}");
-                var token = await getTokenAutenticacion();
+                var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointPost(archivo.Api)}");
 
-                if (token != String.Empty)
+                if (this.token != String.Empty)
                 {
                     using (var client = new HttpClient())
                     using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
                     {
                         request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
 
-                        using (var response = client.SendAsync(request))
+                        using (var response = await client.SendAsync(request))
                         {
-                            var details = response.Result.Content.ReadAsStringAsync();
-                            if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                            var details = response.Content.ReadAsStringAsync();
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
-                                Debug.WriteLine(response.Result.StatusCode.ToString());
+                                Debug.WriteLine(response.StatusCode.ToString());
                                 Debug.WriteLine($"Detalles: {details.Result}");
                                 return true;
                             }
                             else
                             {
                                 //generarArchivoErr(archivo.Nombre, "...", details.Result);
-                                Debug.WriteLine(response.Result.StatusCode.ToString());
+                                Debug.WriteLine(response.StatusCode.ToString());
                                 Debug.WriteLine($"Detalles: {details.Result}");
                                 return false;
                             }
@@ -74,7 +85,7 @@ namespace MiddlewareArchivos.Controllers
                 }
             }
             return false;
-            
+
         }
     }
 }
