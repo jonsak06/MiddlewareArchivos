@@ -46,5 +46,14 @@ namespace MiddlewareArchivos.Mappers
                 default: return string.Empty;
             }
         }
+
+        public string GetNombreInterfaz(EnumInterfaces interfaz)
+        {
+            switch (interfaz)
+            {
+                case EnumInterfaces.Producto: return NombresInterfacesConstants.Producto;
+                default: return String.Empty;
+            }
+        }
     }
 }
