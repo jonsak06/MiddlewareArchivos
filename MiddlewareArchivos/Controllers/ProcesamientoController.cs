@@ -1,9 +1,11 @@
 ﻿using MiddlewareArchivos.Entities;
+using MiddlewareArchivos.Enums;
 using MiddlewareArchivos.Providers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -15,10 +17,16 @@ namespace MiddlewareArchivos.Controllers
     {
         private EndpointProvider endpointProvider;
         private string token;
+        private string pathCarpetaProcesadoIn;
 
+        private ProcesamientoController()
+        {
+            this.endpointProvider = new EndpointProvider();
+            this.pathCarpetaProcesadoIn = CarpetasController.Instance.PathCarpetaInProcesado;
+        }
         private async Task<ProcesamientoController> InitializeAsync()
         {
-            this.token = await getTokenAutenticacion();
+            this.token = await getTokenAutenticacionAsync();
             return this;
         }
         public static Task<ProcesamientoController> CreateAsync()
@@ -26,29 +34,26 @@ namespace MiddlewareArchivos.Controllers
             var ret = new ProcesamientoController();
             return ret.InitializeAsync();
         }
-        private ProcesamientoController()
-        {
-            this.endpointProvider = new EndpointProvider();
-        }
-        private async Task<string> getTokenAutenticacion()
+        private async Task<string> getTokenAutenticacionAsync()
         {
             try
             {
                 var token = await Authenticator.GetTokenAsync();
                 return token;
             }
-            catch (Exception ex)
+            catch
             {
-                //ver que hacer en caso de error al conectarse
-                Debug.WriteLine(ex);
                 return String.Empty;
             }
         }
-        private void generarArchivoErr(string nombreArchivo, string pathCarpetaProcesado, string detalles)
+        private void generarArchivoErr(string nombreArchivo, string detalles)
         {
-            throw new NotImplementedException();
+            using (StreamWriter sw = File.AppendText($"{this.pathCarpetaProcesadoIn}{nombreArchivo}.err"))
+            {
+                sw.WriteLine(detalles);
+            }
         }
-        public async Task<bool> procesarArchivoIn(Archivo archivo)
+        public async Task<EnumRetornoProcesamiento> procesarArchivoInAsync(Archivo archivo)
         {
             if (InterfacesController.existeInterfaz(archivo.Api))
             {
@@ -66,25 +71,32 @@ namespace MiddlewareArchivos.Controllers
                         using (var response = await client.SendAsync(request))
                         {
                             var details = response.Content.ReadAsStringAsync();
-                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            if (response.StatusCode == HttpStatusCode.OK)
                             {
-                                Debug.WriteLine(response.StatusCode.ToString());
-                                Debug.WriteLine($"Detalles: {details.Result}");
-                                return true;
+                                //Debug.WriteLine(response.StatusCode.ToString());
+                                //Debug.WriteLine($"Detalles: {details.Result}");
+                                return EnumRetornoProcesamiento.Procesado;
                             }
                             else
                             {
-                                //generarArchivoErr(archivo.Nombre, "...", details.Result);
-                                Debug.WriteLine(response.StatusCode.ToString());
-                                Debug.WriteLine($"Detalles: {details.Result}");
-                                return false;
+                                //Debug.WriteLine(response.StatusCode.ToString());
+                                //Debug.WriteLine($"Detalles: {details.Result}");
+                                generarArchivoErr(archivo.Nombre, details.Result);
+                                return EnumRetornoProcesamiento.ErrorProcesamiento;
                             }
 
                         }
                     }
                 }
+                else
+                {
+                    return EnumRetornoProcesamiento.ErrorAutenticacion;
+                }
             }
-            return false;
+            else
+            {
+                return EnumRetornoProcesamiento.ErrorInterfaz;
+            }
 
         }
     }

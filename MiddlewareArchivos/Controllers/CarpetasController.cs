@@ -9,13 +9,19 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Controllers
 {
-    internal class CarpetasController
+    internal sealed class CarpetasController
     {
+        private static CarpetasController instance = new CarpetasController();
         private ConfigMapper mapper;
         private string Path;
         public readonly string PathCarpetaIn, PathCarpetaOut, PathCarpetaConfig, PathCarpetaCtrl, PathCarpetaInPendiente, PathCarpetaInEnProceso,
             PathCarpetaInProcesado, PathCarpetaInNoProcesado, PathCarpetaInLog, PathCarpetaOutPendiente, PathCarpetaOutEnProceso, PathCarpetaOutBackup, PathCarpetaOutLog;
-        public CarpetasController()
+        static CarpetasController() { }
+        public static CarpetasController Instance
+        {
+            get { return instance; }
+        }
+        private CarpetasController()
         {
             mapper = new ConfigMapper();
             Path = ConfigurationManager.AppSettings[mapper.GetKeyCarpeta(EnumCarpetas.Path)];

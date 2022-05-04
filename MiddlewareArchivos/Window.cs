@@ -15,7 +15,7 @@ namespace MiddlewareArchivos
         public Window()
         {
             InitializeComponent();
-            this.carpetasController = new CarpetasController();
+            this.carpetasController = CarpetasController.Instance;
             this.provider = new XMLProvider();
             this.empresas = new List<Empresa>();
         }
@@ -59,9 +59,22 @@ namespace MiddlewareArchivos
             Archivo archivo = new Archivo("acme.1.Producto.prueba1");
             archivo.Contenido = File.ReadAllText($"C:\\Pasantia\\IN\\PENDIENTE\\{archivo.Nombre}");
 
-            if (await procesamientoController.procesarArchivoIn(archivo))
+            EnumRetornoProcesamiento respuesta = await procesamientoController.procesarArchivoInAsync(archivo);
+            if (respuesta.Equals(EnumRetornoProcesamiento.Procesado))
             {
                 Debug.WriteLine("Archivo procesado");
+            }
+            else if(respuesta.Equals(EnumRetornoProcesamiento.ErrorAutenticacion))
+            {
+                Debug.WriteLine("Error autenticación");
+            }
+            else if(respuesta.Equals(EnumRetornoProcesamiento.ErrorInterfaz))
+            {
+                Debug.WriteLine("Interfaz no existe");
+            }
+            else if (respuesta.Equals(EnumRetornoProcesamiento.ErrorProcesamiento))
+            {
+                Debug.WriteLine("Error de procesamiento");
             }
             else
             {
