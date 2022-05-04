@@ -52,6 +52,14 @@ namespace MiddlewareArchivos.Mappers
             switch (interfaz)
             {
                 case EnumInterfaces.Producto: return NombresInterfacesConstants.Producto;
+                case EnumInterfaces.CodigoBarras: return NombresInterfacesConstants.CodigoBarras;
+                case EnumInterfaces.Agenda: return NombresInterfacesConstants.Agenda;
+                case EnumInterfaces.Agente: return NombresInterfacesConstants.Agente;
+                case EnumInterfaces.AnulacionReferenciaRecepcion: return NombresInterfacesConstants.AnulacionReferenciaRecepcion;
+                case EnumInterfaces.Pedido: return NombresInterfacesConstants.Pedido;
+                case EnumInterfaces.ReferenciaRecepcion: return NombresInterfacesConstants.ReferenciaRecepcion;
+                case EnumInterfaces.ModificarDetalleReferencia: return NombresInterfacesConstants.ModificarDetalleReferencia;
+                case EnumInterfaces.ProductoProveedor: return NombresInterfacesConstants.ProductoProveedor;
                 default: return String.Empty;
             }
         }

@@ -8,6 +8,6 @@ namespace MiddlewareArchivos.Enums
 {
     internal enum EnumInterfaces
     {
-        Producto
+        Producto, CodigoBarras, Agenda, Agente, AnulacionReferenciaRecepcion, Pedido, ReferenciaRecepcion, ModificarDetalleReferencia, ProductoProveedor
     }
 }
