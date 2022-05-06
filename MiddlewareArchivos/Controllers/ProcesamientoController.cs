@@ -1,6 +1,7 @@
 ﻿using MiddlewareArchivos.Entities;
 using MiddlewareArchivos.Enums;
 using MiddlewareArchivos.Providers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace MiddlewareArchivos.Controllers
     internal class ProcesamientoController
     {
         private EndpointProvider endpointProvider;
-        private string token;
+        public string token;
         private string pathCarpetaProcesadoIn;
 
         private ProcesamientoController()
@@ -53,51 +54,41 @@ namespace MiddlewareArchivos.Controllers
                 sw.WriteLine(detalles);
             }
         }
-        public async Task<EnumRetornoProcesamiento> procesarArchivoInAsync(Archivo archivo)
+        public bool empresaCorrecta(Archivo archivo)
         {
-            if (InterfacesController.existeInterfaz(archivo.Api))
+            long codigoEmpresaContenido = long.Parse(JObject.Parse(archivo.Contenido)["empresa"].ToString());
+            if (codigoEmpresaContenido == archivo.Empresa.Id)
             {
-                var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointPost(archivo.Api)}");
+                return true;
+            }
+            return false;
+        }
+        public async Task<bool> procesarArchivoInAsync(Archivo archivo)
+        {
+            var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointPost(archivo.Api)}");
 
-                if (this.token != String.Empty)
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
+            {
+                request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
+
+
+                using (var response = await client.SendAsync(request))
                 {
-                    using (var client = new HttpClient())
-                    using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
+                    var details = response.Content.ReadAsStringAsync();
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
-
-
-                        using (var response = await client.SendAsync(request))
-                        {
-                            var details = response.Content.ReadAsStringAsync();
-                            if (response.StatusCode == HttpStatusCode.OK)
-                            {
-                                //Debug.WriteLine(response.StatusCode.ToString());
-                                //Debug.WriteLine($"Detalles: {details.Result}");
-                                return EnumRetornoProcesamiento.Procesado;
-                            }
-                            else
-                            {
-                                //Debug.WriteLine(response.StatusCode.ToString());
-                                //Debug.WriteLine($"Detalles: {details.Result}");
-                                generarArchivoErr(archivo.Nombre, details.Result);
-                                return EnumRetornoProcesamiento.ErrorProcesamiento;
-                            }
-
-                        }
+                        return true;
+                    }
+                    else
+                    {
+                        generarArchivoErr(archivo.Nombre, details.Result);
+                        return false;
                     }
                 }
-                else
-                {
-                    return EnumRetornoProcesamiento.ErrorAutenticacion;
-                }
             }
-            else
-            {
-                return EnumRetornoProcesamiento.ErrorInterfaz;
-            }
-
+            
         }
     }
 }

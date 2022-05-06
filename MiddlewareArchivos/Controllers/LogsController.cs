@@ -47,11 +47,11 @@ namespace MiddlewareArchivos.Controllers
         {
             return $"Secuencia del archivo {nombreArchivo} incorrecta | {DateTime.UtcNow.AddHours(-3)}";
         }
-        public static string mensajeArchivoPendiente(string nombreArchivo, string pathCarpetaPendiente)
+        public static string mensajeArchivoPendienteProcesamiento(string nombreArchivo, string pathCarpetaPendiente)
         {
             return $"Archivo {nombreArchivo} se mantiene en la carpeta {getNombreCarpeta(pathCarpetaPendiente)} para su futuro procesamiento | {DateTime.UtcNow.AddHours(-3)}";
         }
-        public static string mensajeArchivoNoCumpleFormato(string nombreArchivo)
+        public static string mensajeNombreArchivoNoCumpleFormato(string nombreArchivo)
         {
             return $"Nombre de archivo {nombreArchivo} no cumple con el formato necesario para su procesamiento | {DateTime.UtcNow.AddHours(-3)}";
         }
