@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Controllers
 {
-    internal class LogsController
+    internal static class LogsController
     {
         public static void escribirEnLog(string pathCarpetaLog, string mensaje)
         {
@@ -33,7 +33,7 @@ namespace MiddlewareArchivos.Controllers
         }
         public static string mensajeArchivoNoProcesado(string nombreArchivo)
         {
-            return $"El archivo {nombreArchivo} no se pudo procesar correctamente | {DateTime.UtcNow.AddHours(-3)}";
+            return $"Archivo {nombreArchivo} no se pudo procesar correctamente | {DateTime.UtcNow.AddHours(-3)}";
         }
         public static string mensajeSecuenciaAumentada(int secuencia, string pathArchivoCtrlsec)
         {
@@ -54,6 +54,22 @@ namespace MiddlewareArchivos.Controllers
         public static string mensajeNombreArchivoNoCumpleFormato(string nombreArchivo)
         {
             return $"Nombre de archivo {nombreArchivo} no cumple con el formato necesario para su procesamiento | {DateTime.UtcNow.AddHours(-3)}";
+        }
+        public static string mensajeFalloAutenticacion()
+        {
+            return $"Error al solicitar token de autenticación | {DateTime.UtcNow.AddHours(-3)}";
+        }
+        public static string mensajeEmpresaInexistente(string nombreEmpresa)
+        {
+            return $"Empresa {nombreEmpresa} no existe en el registro | {DateTime.UtcNow.AddHours(-3)}";
+        }
+        public static string mensajeInterfazInexistente(string nombreInterfaz)
+        {
+            return $"Interfaz {nombreInterfaz} no existe en el registro | {DateTime.UtcNow.AddHours(-3)}";
+        }
+        public static string mensajeEmpresaIncorrecta(string nombreEmpresa)
+        {
+            return $"Código de la empresa {nombreEmpresa} no corresponde con el declarado en el contenido del archivo | {DateTime.UtcNow.AddHours(-3)}";
         }
         public static string mensajeSeparador()
         {

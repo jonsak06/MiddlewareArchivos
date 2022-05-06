@@ -55,6 +55,7 @@ namespace MiddlewareArchivos
         {
             btnProcesarArchivosIn.Enabled = false;
             ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
+            string pathCarpetaInLog = this.carpetasController.PathCarpetaInLog;
 
             #region testeo con un archivo
             //Archivo archivo = new Archivo("acme.1.Producto.prueba1");
@@ -66,13 +67,13 @@ namespace MiddlewareArchivos
             if (procesamientoController.token == String.Empty)
             {
                 btnProcesarArchivosIn.Enabled = true;
-                //crear msj de log 'fallo al autenticarse'
+                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeFalloAutenticacion());
                 MessageBox.Show($"Error de autenticación");
                 return;
             }
 
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
-            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeCantidadArchivosDetectados(pathsArchivosIn.Length, this.carpetasController.PathCarpetaInPendiente));
+            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeCantidadArchivosDetectados(pathsArchivosIn.Length, this.carpetasController.PathCarpetaInPendiente));
             if (pathsArchivosIn.Length > 0)
             {
                 List<Archivo> archivos = new List<Archivo>();
@@ -88,13 +89,13 @@ namespace MiddlewareArchivos
                     {
                         //mueve archivos cuyo nombre no cumplen con el formato para procesarlos
                         File.Move(path, $"{this.carpetasController.PathCarpetaInNoProcesado}{nombreArchivo}");
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeNombreArchivoNoCumpleFormato(nombreArchivo));
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(nombreArchivo, this.carpetasController.PathCarpetaInNoProcesado));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeNombreArchivoNoCumpleFormato(nombreArchivo));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(nombreArchivo, this.carpetasController.PathCarpetaInNoProcesado));
                     }
                 }
 
                 archivos = SecuenciasController.ordenarPorSecuencia(archivos);
-                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivosOrdenados());
+                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivosOrdenados());
 
 
                 foreach (Archivo archivo in archivos)
@@ -107,65 +108,68 @@ namespace MiddlewareArchivos
 
                     if (archivo.Empresa == null)
                     {
-                        //crear msj log para 'empresa no existe'
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeEmpresaInexistente(archivo.NombreEmpresa));
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
                     }
                     else if (!InterfacesController.existeInterfaz(archivo.Api))
                     {
-                        //crear msj log para 'interfaz no existe'
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeInterfazInexistente(archivo.Api));
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
                     }
-                    else if (!procesamientoController.empresaCorrecta(archivo))//id empresa del nombre del archivo != id empresa del contenido
+                    else if (!procesamientoController.empresaCorrecta(archivo))//si id empresa del nombre del archivo != id empresa del contenido
                     {
-                        //crear msj log para 'empresa no corresponde a la declarada en el contenido del archivo'
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeEmpresaIncorrecta(archivo.NombreEmpresa));
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
                     }
                     else if (!archivo.tieneSecuencial() && !archivo.Empresa.ManejaSecuencial)
                     {
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInEnProceso));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInEnProceso));
 
                         if (await procesamientoController.procesarArchivoInAsync(archivo))
                         {
-                            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoProcesado(archivo.Nombre));
+                            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoProcesado(archivo.Nombre));
                         }
                         else
                         {
-                            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoNoProcesado(archivo.Nombre));
+                            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoNoProcesado(archivo.Nombre));
                         }
 
                         File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInProcesado));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInProcesado));
 
                     }
                     else if ((!archivo.tieneSecuencial() && archivo.Empresa.ManejaSecuencial) || (archivo.tieneSecuencial() && !archivo.Empresa.ManejaSecuencial))
                     {
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeNombreArchivoNoCumpleFormato(archivo.Nombre));
-                        LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeNombreArchivoNoCumpleFormato(archivo.Nombre));
+                        LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
                     }
                     else if (archivo.tieneSecuencial() && archivo.Empresa.ManejaSecuencial)
                     {
                         if (SecuenciasController.secuenciaCorrecta(this.carpetasController.PathCarpetaCtrl, archivo))
                         {
                             File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
-                            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInEnProceso));
+                            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInEnProceso));
 
                             if (await procesamientoController.procesarArchivoInAsync(archivo))
                             {
-                                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoProcesado(archivo.Nombre));
+                                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoProcesado(archivo.Nombre));
                             }
                             else
                             {
-                                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoNoProcesado(archivo.Nombre));
+                                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoNoProcesado(archivo.Nombre));
                             }
 
                             File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
-                            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInProcesado));
+                            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInProcesado));
 
                             string pathArchivoCtrlsec = SecuenciasController.getPathArchivoCtrlsec(this.carpetasController.PathCarpetaCtrl, archivo.NombreEmpresa);
                             SecuenciasController.aumentarSecuencia(pathArchivoCtrlsec);// aumenta 1 en la ultima secuencia procesada (en archivo ctrlsec)
-                            LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSecuenciaAumentada(archivo.Secuencia, pathArchivoCtrlsec));
+                            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSecuenciaAumentada(archivo.Secuencia, pathArchivoCtrlsec));
                         }
                         else
                         {
@@ -174,12 +178,12 @@ namespace MiddlewareArchivos
                                 archivo.Secuencia > SecuenciasController.getSecuenciaFinal(pathArchivoCtrlsec))
                             {
                                 File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
-                                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSecuenciaIncorrecta(archivo.Nombre));
-                                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
+                                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSecuenciaIncorrecta(archivo.Nombre));
+                                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoMovido(archivo.Nombre, this.carpetasController.PathCarpetaInNoProcesado));
                             }
                             else
                             {
-                                LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeArchivoPendienteProcesamiento(archivo.Nombre, this.carpetasController.PathCarpetaInPendiente));
+                                LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeArchivoPendienteProcesamiento(archivo.Nombre, this.carpetasController.PathCarpetaInPendiente));
                             }
                         }
                     }
@@ -187,7 +191,7 @@ namespace MiddlewareArchivos
             }
 
 
-            //LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSeparador());
+            //LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSeparador());
             btnProcesarArchivosIn.Enabled = true;
             MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
         }
