@@ -7,12 +7,12 @@ using System.Xml.Linq;
 
 namespace MiddlewareArchivos
 {
-    public partial class Window : Form
+    public partial class ProcesamientoForm : Form
     {
         private CarpetasController carpetasController;
         private XMLProvider provider;
         private List<Empresa> empresas;
-        public Window()
+        public ProcesamientoForm()
         {
             InitializeComponent();
             this.carpetasController = CarpetasController.Instance;
@@ -43,12 +43,6 @@ namespace MiddlewareArchivos
                 }
             }
             LogsController.escribirEnLog(this.carpetasController.PathCarpetaInLog, LogsController.mensajeSeparador());
-        }
-
-        private void btnCrearCarpetas_Click(object sender, EventArgs e)
-        {
-            this.carpetasController.crearCarpetas();
-            MessageBox.Show("Carpetas creadas");
         }
 
         private async void btnProcesarArchivosIn_Click(object sender, EventArgs e)
@@ -190,8 +184,7 @@ namespace MiddlewareArchivos
                 }
             }
 
-
-            //LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSeparador());
+            LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSeparador());
             btnProcesarArchivosIn.Enabled = true;
             MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
         }

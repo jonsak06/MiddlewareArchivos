@@ -1,6 +1,6 @@
 ﻿namespace MiddlewareArchivos
 {
-    partial class Window
+    partial class ProcesamientoForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,26 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnCrearCarpetas = new System.Windows.Forms.Button();
             this.btnProcesarArchivosIn = new System.Windows.Forms.Button();
             this.btnProcesarArchivosOut = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // btnCrearCarpetas
-            // 
-            this.btnCrearCarpetas.Location = new System.Drawing.Point(12, 12);
-            this.btnCrearCarpetas.Name = "btnCrearCarpetas";
-            this.btnCrearCarpetas.Size = new System.Drawing.Size(483, 68);
-            this.btnCrearCarpetas.TabIndex = 0;
-            this.btnCrearCarpetas.Text = "Crear carpetas";
-            this.btnCrearCarpetas.UseVisualStyleBackColor = true;
-            this.btnCrearCarpetas.Click += new System.EventHandler(this.btnCrearCarpetas_Click);
-            // 
             // btnProcesarArchivosIn
             // 
-            this.btnProcesarArchivosIn.Location = new System.Drawing.Point(12, 86);
+            this.btnProcesarArchivosIn.Location = new System.Drawing.Point(12, 12);
             this.btnProcesarArchivosIn.Name = "btnProcesarArchivosIn";
-            this.btnProcesarArchivosIn.Size = new System.Drawing.Size(483, 68);
+            this.btnProcesarArchivosIn.Size = new System.Drawing.Size(483, 102);
             this.btnProcesarArchivosIn.TabIndex = 2;
             this.btnProcesarArchivosIn.Text = "Procesar archivos de IN";
             this.btnProcesarArchivosIn.UseVisualStyleBackColor = true;
@@ -55,25 +44,24 @@
             // 
             // btnProcesarArchivosOut
             // 
-            this.btnProcesarArchivosOut.Location = new System.Drawing.Point(12, 160);
+            this.btnProcesarArchivosOut.Location = new System.Drawing.Point(12, 120);
             this.btnProcesarArchivosOut.Name = "btnProcesarArchivosOut";
-            this.btnProcesarArchivosOut.Size = new System.Drawing.Size(483, 68);
+            this.btnProcesarArchivosOut.Size = new System.Drawing.Size(483, 102);
             this.btnProcesarArchivosOut.TabIndex = 3;
             this.btnProcesarArchivosOut.Text = "Procesar archivos de OUT";
             this.btnProcesarArchivosOut.UseVisualStyleBackColor = true;
             this.btnProcesarArchivosOut.Click += new System.EventHandler(this.btnProcesarArchivosOut_Click);
             // 
-            // Window
+            // ProcesamientoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(507, 357);
+            this.ClientSize = new System.Drawing.Size(507, 293);
             this.Controls.Add(this.btnProcesarArchivosOut);
             this.Controls.Add(this.btnProcesarArchivosIn);
-            this.Controls.Add(this.btnCrearCarpetas);
             this.MaximizeBox = false;
-            this.Name = "Window";
+            this.Name = "ProcesamientoForm";
             this.Text = "Middleware de archivos";
             this.Load += new System.EventHandler(this.Window_Load);
             this.ResumeLayout(false);
@@ -81,8 +69,6 @@
         }
 
         #endregion
-
-        private Button btnCrearCarpetas;
         private Button btnProcesarArchivosIn;
         private Button btnProcesarArchivosOut;
     }

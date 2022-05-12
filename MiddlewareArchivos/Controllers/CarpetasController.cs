@@ -65,5 +65,29 @@ namespace MiddlewareArchivos.Controllers
                 }
             }
         }
+
+        public bool existenCarpetas()
+        {
+            List<string> carpetasPrincipales = new List<string> { PathCarpetaIn, PathCarpetaOut, PathCarpetaConfig, PathCarpetaCtrl };
+            List<string> subCarpetas = new List<string> { PathCarpetaInPendiente, PathCarpetaInEnProceso, PathCarpetaInProcesado, PathCarpetaInNoProcesado, PathCarpetaInLog,
+                PathCarpetaOutEnProceso, PathCarpetaOutPendiente, PathCarpetaOutBackup, PathCarpetaOutLog };
+
+            foreach (string carpeta in carpetasPrincipales)
+            {
+                if (!Directory.Exists(carpeta))
+                {
+                    return false;
+                }
+            }
+
+            foreach (string subCarpeta in subCarpetas)
+            {
+                if (!Directory.Exists(subCarpeta))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

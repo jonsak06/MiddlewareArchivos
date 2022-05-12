@@ -33,7 +33,7 @@ namespace MiddlewareArchivos.Controllers
         }
         public static string mensajeArchivoNoProcesado(string nombreArchivo)
         {
-            return $"Archivo {nombreArchivo} no se pudo procesar correctamente | {DateTime.UtcNow.AddHours(-3)}";
+            return $"Archivo {nombreArchivo} no se pudo procesar correctamente, generado {nombreArchivo}.err | {DateTime.UtcNow.AddHours(-3)}";
         }
         public static string mensajeSecuenciaAumentada(int secuencia, string pathArchivoCtrlsec)
         {
