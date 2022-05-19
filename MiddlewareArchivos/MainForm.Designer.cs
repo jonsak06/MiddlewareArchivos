@@ -34,6 +34,7 @@
             // 
             // btnConfiguracionInicial
             // 
+            this.btnConfiguracionInicial.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnConfiguracionInicial.Location = new System.Drawing.Point(12, 12);
             this.btnConfiguracionInicial.Name = "btnConfiguracionInicial";
             this.btnConfiguracionInicial.Size = new System.Drawing.Size(394, 97);
@@ -44,6 +45,7 @@
             // 
             // btnFormProcesamiento
             // 
+            this.btnFormProcesamiento.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnFormProcesamiento.Location = new System.Drawing.Point(12, 115);
             this.btnFormProcesamiento.Name = "btnFormProcesamiento";
             this.btnFormProcesamiento.Size = new System.Drawing.Size(394, 97);

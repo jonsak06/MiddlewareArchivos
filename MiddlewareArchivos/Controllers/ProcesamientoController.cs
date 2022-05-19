@@ -70,20 +70,21 @@ namespace MiddlewareArchivos.Controllers
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
             {
-                request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
+                client.Timeout = TimeSpan.FromMinutes(10);
+                request.Content = new StringContent(JsonSerializer.Serialize(archivo.Contenido), Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
 
                 using (var response = await client.SendAsync(request))
                 {
-                    var details = response.Content.ReadAsStringAsync();
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    var details = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
                     {
                         return true;
                     }
                     else
                     {
-                        generarArchivoErr(archivo.Nombre, details.Result);
+                        generarArchivoErr(archivo.Nombre, details);
                         return false;
                     }
                 }

@@ -34,6 +34,7 @@
             // 
             // btnProcesarArchivosIn
             // 
+            this.btnProcesarArchivosIn.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnProcesarArchivosIn.Location = new System.Drawing.Point(12, 12);
             this.btnProcesarArchivosIn.Name = "btnProcesarArchivosIn";
             this.btnProcesarArchivosIn.Size = new System.Drawing.Size(483, 102);
@@ -44,6 +45,7 @@
             // 
             // btnProcesarArchivosOut
             // 
+            this.btnProcesarArchivosOut.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnProcesarArchivosOut.Location = new System.Drawing.Point(12, 120);
             this.btnProcesarArchivosOut.Name = "btnProcesarArchivosOut";
             this.btnProcesarArchivosOut.Size = new System.Drawing.Size(483, 102);
