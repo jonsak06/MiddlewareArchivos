@@ -14,23 +14,23 @@ namespace MiddlewareArchivos.Mappers
         {
             switch (key)
             {
-                case EnumCarpetas.Path: return NombresCarpetasConstants.Path;
+                case EnumCarpetas.Path: return CarpetasConstants.Path;
 
-                case EnumCarpetas.CarpetaIn: return NombresCarpetasConstants.CarpetaIn;
-                case EnumCarpetas.CarpetaPendienteIn: return NombresCarpetasConstants.CarpetaPendienteIn;
-                case EnumCarpetas.CarpetaEnProcesoIn: return NombresCarpetasConstants.CarpetaEnProcesoIn;
-                case EnumCarpetas.CarpetaProcesadoIn: return NombresCarpetasConstants.CarpetaProcesadoIn;
-                case EnumCarpetas.CarpetaNoProcesadoIn: return NombresCarpetasConstants.CarpetaNoProcesadoIn;
-                case EnumCarpetas.CarpetaLogIn: return NombresCarpetasConstants.CarpetaLogIn;
+                case EnumCarpetas.CarpetaIn: return CarpetasConstants.CarpetaIn;
+                case EnumCarpetas.CarpetaPendienteIn: return CarpetasConstants.CarpetaPendienteIn;
+                case EnumCarpetas.CarpetaEnProcesoIn: return CarpetasConstants.CarpetaEnProcesoIn;
+                case EnumCarpetas.CarpetaProcesadoIn: return CarpetasConstants.CarpetaProcesadoIn;
+                case EnumCarpetas.CarpetaNoProcesadoIn: return CarpetasConstants.CarpetaNoProcesadoIn;
+                case EnumCarpetas.CarpetaLogIn: return CarpetasConstants.CarpetaLogIn;
 
-                case EnumCarpetas.CarpetaOut: return NombresCarpetasConstants.CarpetaOut;
-                case EnumCarpetas.CarpetaEnProcesoOut: return NombresCarpetasConstants.CarpetaEnProcesoOut;
-                case EnumCarpetas.CarpetaPendienteOut: return NombresCarpetasConstants.CarpetaPendienteOut;
-                case EnumCarpetas.CarpetaBackupOut: return NombresCarpetasConstants.CarpetaBackupOut;
-                case EnumCarpetas.CarpetaLogOut: return NombresCarpetasConstants.CarpetaLogOut;
+                case EnumCarpetas.CarpetaOut: return CarpetasConstants.CarpetaOut;
+                case EnumCarpetas.CarpetaEnProcesoOut: return CarpetasConstants.CarpetaEnProcesoOut;
+                case EnumCarpetas.CarpetaPendienteOut: return CarpetasConstants.CarpetaPendienteOut;
+                case EnumCarpetas.CarpetaBackupOut: return CarpetasConstants.CarpetaBackupOut;
+                case EnumCarpetas.CarpetaLogOut: return CarpetasConstants.CarpetaLogOut;
 
-                case EnumCarpetas.CarpetaConfig: return NombresCarpetasConstants.CarpetaConfig;
-                case EnumCarpetas.CarpetaCtrl: return NombresCarpetasConstants.CarpetaCtrl;
+                case EnumCarpetas.CarpetaConfig: return CarpetasConstants.CarpetaConfig;
+                case EnumCarpetas.CarpetaCtrl: return CarpetasConstants.CarpetaCtrl;
                 default: return string.Empty;
             }
 
@@ -39,10 +39,10 @@ namespace MiddlewareArchivos.Mappers
         {
             switch (key)
             {
-                case EnumArchivosXML.Empresas: return NombresArchivosXMLConstants.Empresas;
-                case EnumArchivosXML.Interfaces: return NombresArchivosXMLConstants.Interfaces;
-                case EnumArchivosXML.Urls: return NombresArchivosXMLConstants.Urls;
-                case EnumArchivosXML.Usuarios: return NombresArchivosXMLConstants.Usuarios;
+                case EnumArchivosXML.Empresas: return ArchivosXMLConstants.Empresas;
+                case EnumArchivosXML.Interfaces: return ArchivosXMLConstants.Interfaces;
+                case EnumArchivosXML.Urls: return ArchivosXMLConstants.Urls;
+                case EnumArchivosXML.Usuarios: return ArchivosXMLConstants.Usuarios;
                 default: return string.Empty;
             }
         }
@@ -51,15 +51,15 @@ namespace MiddlewareArchivos.Mappers
         {
             switch (interfaz)
             {
-                case EnumInterfaces.Producto: return NombresInterfacesConstants.Producto;
-                case EnumInterfaces.CodigoBarras: return NombresInterfacesConstants.CodigoBarras;
-                case EnumInterfaces.Agenda: return NombresInterfacesConstants.Agenda;
-                case EnumInterfaces.Agente: return NombresInterfacesConstants.Agente;
-                case EnumInterfaces.AnulacionReferenciaRecepcion: return NombresInterfacesConstants.AnulacionReferenciaRecepcion;
-                case EnumInterfaces.Pedido: return NombresInterfacesConstants.Pedido;
-                case EnumInterfaces.ReferenciaRecepcion: return NombresInterfacesConstants.ReferenciaRecepcion;
-                case EnumInterfaces.ModificarDetalleReferencia: return NombresInterfacesConstants.ModificarDetalleReferencia;
-                case EnumInterfaces.ProductoProveedor: return NombresInterfacesConstants.ProductoProveedor;
+                case EnumInterfaces.Producto: return InterfacesConstants.Producto;
+                case EnumInterfaces.CodigoBarras: return InterfacesConstants.CodigoBarras;
+                case EnumInterfaces.Agenda: return InterfacesConstants.Agenda;
+                case EnumInterfaces.Agente: return InterfacesConstants.Agente;
+                case EnumInterfaces.AnulacionReferenciaRecepcion: return InterfacesConstants.AnulacionReferenciaRecepcion;
+                case EnumInterfaces.Pedido: return InterfacesConstants.Pedido;
+                case EnumInterfaces.ReferenciaRecepcion: return InterfacesConstants.ReferenciaRecepcion;
+                case EnumInterfaces.ModificarDetalleReferencia: return InterfacesConstants.ModificarDetalleReferencia;
+                case EnumInterfaces.ProductoProveedor: return InterfacesConstants.ProductoProveedor;
                 default: return String.Empty;
             }
         }

@@ -71,7 +71,7 @@ namespace MiddlewareArchivos.Controllers
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
             {
                 client.Timeout = TimeSpan.FromMinutes(10);
-                request.Content = new StringContent(JsonSerializer.Serialize(archivo.Contenido), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
 

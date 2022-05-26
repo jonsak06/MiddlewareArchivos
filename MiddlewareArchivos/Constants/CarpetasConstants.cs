@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Constants
 {
-    internal class NombresCarpetasConstants
+    internal class CarpetasConstants
     {
 		public const string Path = "Path";
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Constants
 {
-    internal class NombresInterfacesConstants
+    internal class InterfacesConstants
     {
         public const string Producto = "Producto";
         public const string CodigoBarras = "CodigoBarras";
