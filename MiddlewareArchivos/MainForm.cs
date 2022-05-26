@@ -14,12 +14,12 @@ namespace MiddlewareArchivos
     public partial class MainForm : Form
     {
         private CarpetasController carpetasController;
-        private ArchivosXmlController archivosXmlController;
+        private ArchivosXMLController archivosXmlController;
         public MainForm()
         {
             InitializeComponent();
             this.carpetasController = CarpetasController.Instance;
-            archivosXmlController = new ArchivosXmlController();
+            archivosXmlController = new ArchivosXMLController();
         }
 
         private void btnConfiguracionInicial_Click(object sender, EventArgs e)

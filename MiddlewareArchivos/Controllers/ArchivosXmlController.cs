@@ -9,26 +9,19 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivos.Controllers
 {
-    internal class ArchivosXmlController
+    internal class ArchivosXMLController
     {
-        private string NombreArchivoEmpresas, NombreArchivoUrls, NombreArchivoInterfaces, NombreArchivoUsuarios;
         private string PathArchivoEmpresas, PathArchivoUrls, PathArchivoInterfaces, PathArchivoUsuarios;
-        public ArchivosXmlController()
+        public ArchivosXMLController()
         {
             ConfigMapper mapper = new ConfigMapper();
             CarpetasController carpetasController = CarpetasController.Instance;
             string pathConfig = carpetasController.PathCarpetaConfig;
 
-
-            this.NombreArchivoEmpresas = ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Empresas)];
-            this.NombreArchivoUrls = ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Urls)];
-            this.NombreArchivoInterfaces = ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Interfaces)];
-            this.NombreArchivoUsuarios = ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Usuarios)];
-
-            this.PathArchivoEmpresas = $"{pathConfig}{NombreArchivoEmpresas}";
-            this.PathArchivoUrls = $"{pathConfig}{NombreArchivoUrls}";
-            this.PathArchivoInterfaces = $"{pathConfig}{NombreArchivoInterfaces}";
-            this.PathArchivoUsuarios = $"{pathConfig}{NombreArchivoUsuarios}";
+            this.PathArchivoEmpresas = $"{pathConfig}{ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Empresas)]}";
+            this.PathArchivoUrls = $"{pathConfig}{ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Urls)]}";
+            this.PathArchivoInterfaces = $"{pathConfig}{ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Interfaces)]}";
+            this.PathArchivoUsuarios = $"{pathConfig}{ConfigurationManager.AppSettings[mapper.GetKeyXML(EnumArchivosXML.Usuarios)]}";
         }
         public bool existenArchivosXml()
         {
