@@ -65,7 +65,7 @@
             this.MaximizeBox = false;
             this.Name = "ProcesamientoForm";
             this.Text = "Middleware de archivos";
-            this.Load += new System.EventHandler(this.Window_Load);
+            this.Load += new System.EventHandler(this.ProcesamientoForm_Load);
             this.ResumeLayout(false);
 
         }

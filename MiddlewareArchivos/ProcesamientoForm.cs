@@ -20,7 +20,7 @@ namespace MiddlewareArchivos
             this.empresas = new List<Empresa>();
         }
 
-        private void Window_Load(object sender, EventArgs e)
+        private void ProcesamientoForm_Load(object sender, EventArgs e)
         {
             //creación de instancias de empresas
             XDocument xmlEmpresas = provider.GetDocument(EnumArchivosXML.Empresas);

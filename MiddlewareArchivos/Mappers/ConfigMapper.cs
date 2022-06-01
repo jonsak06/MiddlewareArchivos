@@ -63,5 +63,16 @@ namespace MiddlewareArchivos.Mappers
                 default: return String.Empty;
             }
         }
+
+        public string GetMetodoSalida(EnumMetodosSalida metodo)
+        {
+            switch (metodo)
+            {
+                case EnumMetodosSalida.MetodoSalida: return MetodosSalidaConstants.MetodoSalida;
+                case EnumMetodosSalida.Polling: return MetodosSalidaConstants.Polling;
+                case EnumMetodosSalida.Webhook: return MetodosSalidaConstants.Webhook;
+                default: return String.Empty;
+            }
+        }
     }
 }

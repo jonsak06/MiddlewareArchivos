@@ -11,7 +11,7 @@ namespace MiddlewareArchivos.Controllers
     internal static class InterfacesController
     {
         private static ConfigMapper mapper = new ConfigMapper();
-        public static List<string> getListaInterfaces()
+        private static List<string> getListaInterfaces()
         {
             List<string> listaInterfaces = new List<string>();
             foreach (EnumInterfaces i in Enum.GetValues(typeof(EnumInterfaces)))

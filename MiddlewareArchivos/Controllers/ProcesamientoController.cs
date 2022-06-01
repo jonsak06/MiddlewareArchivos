@@ -1,9 +1,11 @@
 ﻿using MiddlewareArchivos.Entities;
 using MiddlewareArchivos.Enums;
+using MiddlewareArchivos.Mappers;
 using MiddlewareArchivos.Providers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -19,11 +21,15 @@ namespace MiddlewareArchivos.Controllers
         private EndpointProvider endpointProvider;
         public string token;
         private string pathCarpetaProcesadoIn;
+        private string metodoSalida;
+        ConfigMapper mapper;
 
         private ProcesamientoController()
         {
             this.endpointProvider = new EndpointProvider();
             this.pathCarpetaProcesadoIn = CarpetasController.Instance.PathCarpetaInProcesado;
+            mapper = new ConfigMapper();
+            this.metodoSalida = ConfigurationManager.AppSettings[mapper.GetMetodoSalida(EnumMetodosSalida.MetodoSalida)];
         }
         private async Task<ProcesamientoController> InitializeAsync()
         {
@@ -91,5 +97,20 @@ namespace MiddlewareArchivos.Controllers
             }
             
         }
+        public async Task procesarArchivosOutAsync()
+        {
+            var metodoPolling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
+            var metodoWebhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
+            
+            if(this.metodoSalida == metodoPolling)
+            {
+
+            }
+            else if (this.metodoSalida == metodoWebhook)
+            {
+
+            }
+        }
+
     }
 }

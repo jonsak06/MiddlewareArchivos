@@ -54,7 +54,7 @@ namespace MiddlewareArchivos.Controllers
         }
         public static bool crearCtrlsec(string nombreEmpresa, string pathCarpetaCtrl)
         {
-            string pathArchivoCtrlsec = $"{pathCarpetaCtrl}{nombreEmpresa}.ctrlsec";
+            string pathArchivoCtrlsec = getPathArchivoCtrlsec(pathCarpetaCtrl, nombreEmpresa);
             if (!File.Exists(pathArchivoCtrlsec))
             {
                 using (StreamWriter sw = File.CreateText(pathArchivoCtrlsec))
