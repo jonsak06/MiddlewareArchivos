@@ -32,6 +32,10 @@ namespace MiddlewareArchivos.Providers
         {
             return getEndpoint("Get", api);
         }
+        public string getEndpointGet2(string api)
+        {
+            return getEndpoint("Get2", api);
+        }
 
         private string getEndpoint(string method, string api)
         {

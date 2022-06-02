@@ -17,5 +17,6 @@ namespace MiddlewareArchivos.Constants
         public const string ReferenciaRecepcion = "ReferenciaRecepcion";
         public const string ModificarDetalleReferencia = "ModificarDetalleReferencia";
         public const string ProductoProveedor = "ProductoProveedor";
+        public const string Salida = "Salida";
     }
 }

@@ -60,6 +60,7 @@ namespace MiddlewareArchivos.Mappers
                 case EnumInterfaces.ReferenciaRecepcion: return InterfacesConstants.ReferenciaRecepcion;
                 case EnumInterfaces.ModificarDetalleReferencia: return InterfacesConstants.ModificarDetalleReferencia;
                 case EnumInterfaces.ProductoProveedor: return InterfacesConstants.ProductoProveedor;
+                case EnumInterfaces.Salida: return InterfacesConstants.Salida;
                 default: return String.Empty;
             }
         }
