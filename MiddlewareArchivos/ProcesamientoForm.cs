@@ -1,7 +1,9 @@
 using MiddlewareArchivos.Controllers;
 using MiddlewareArchivos.Entities;
 using MiddlewareArchivos.Enums;
+using MiddlewareArchivos.Mappers;
 using MiddlewareArchivos.Providers;
+using System.Configuration;
 using System.Diagnostics;
 using System.Xml.Linq;
 
@@ -12,12 +14,16 @@ namespace MiddlewareArchivos
         private CarpetasController carpetasController;
         private XMLProvider provider;
         private List<Empresa> empresas;
+        private string metodoSalida;
         public ProcesamientoForm()
         {
             InitializeComponent();
             this.carpetasController = CarpetasController.Instance;
             this.provider = new XMLProvider();
             this.empresas = new List<Empresa>();
+
+            ConfigMapper mapper = new ConfigMapper();
+            this.metodoSalida = ConfigurationManager.AppSettings[mapper.GetMetodoSalida(EnumMetodosSalida.MetodoSalida)];
         }
 
         private void ProcesamientoForm_Load(object sender, EventArgs e)
@@ -192,20 +198,20 @@ namespace MiddlewareArchivos
         {
             btnProcesarArchivosOut.Enabled = false;
             ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
-            await procesamientoController.procesarArchivosOutAsync(empresas[0]);
+            await procesamientoController.procesarArchivosOutAsync(empresas[0], this.metodoSalida);
 
-            //string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
-            //if(pathsArchivosOut.Length > 0)
-            //{
-            //    foreach (string path in pathsArchivosOut)
-            //    {
-            //        string[] splitedPath = path.Split("\\");
-            //        string nombreArchivo = splitedPath[splitedPath.Length - 1];
-            //        File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
-            //        File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
-            //    }
-            //    MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
-            //}
+            string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
+            if (pathsArchivosOut.Length > 0)
+            {
+                foreach (string path in pathsArchivosOut)
+                {
+                    string[] splitedPath = path.Split("\\");
+                    string nombreArchivo = splitedPath[splitedPath.Length - 1];
+                    File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
+                    File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
+                }
+                MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
+            }
             btnProcesarArchivosOut.Enabled = true;
         }
 

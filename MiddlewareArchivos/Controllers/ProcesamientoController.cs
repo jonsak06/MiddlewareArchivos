@@ -21,7 +21,6 @@ namespace MiddlewareArchivos.Controllers
         private EndpointProvider endpointProvider;
         public string token;
         private string pathCarpetaProcesadoIn, pathCarpetaEnProcesoOut;
-        private string metodoSalida;
         ConfigMapper mapper;
 
         private ProcesamientoController()
@@ -30,7 +29,6 @@ namespace MiddlewareArchivos.Controllers
             this.pathCarpetaProcesadoIn = CarpetasController.Instance.PathCarpetaInProcesado;
             this.pathCarpetaEnProcesoOut = CarpetasController.Instance.PathCarpetaOutEnProceso;
             mapper = new ConfigMapper();
-            this.metodoSalida = ConfigurationManager.AppSettings[mapper.GetMetodoSalida(EnumMetodosSalida.MetodoSalida)];
         }
         private async Task<ProcesamientoController> InitializeAsync()
         {
@@ -107,12 +105,12 @@ namespace MiddlewareArchivos.Controllers
             }
 
         }
-        public async Task<bool> procesarArchivosOutAsync(Empresa empresa)//controlar errores y revisar que devuelve cuando no hay ejecuciones
+        public async Task<bool> procesarArchivosOutAsync(Empresa empresa, string metodoSalida)//controlar errores y revisar que devuelve cuando no hay ejecuciones
         {
             var metodoPolling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
             var metodoWebhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
 
-            if (this.metodoSalida == metodoPolling)
+            if (metodoSalida == metodoPolling)
             {
                 var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
                 string contenido = null;
@@ -173,7 +171,7 @@ namespace MiddlewareArchivos.Controllers
                 }
 
             }
-            else if (this.metodoSalida == metodoWebhook)
+            else if (metodoSalida == metodoWebhook)
             {
                 return false;
             }
