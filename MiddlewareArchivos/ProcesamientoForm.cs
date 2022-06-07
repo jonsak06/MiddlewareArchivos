@@ -60,9 +60,9 @@ namespace MiddlewareArchivos
 
             if (procesamientoController.token == String.Empty)
             {
-                btnProcesarArchivosIn.Enabled = true;
                 LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeFalloAutenticacion());
                 MessageBox.Show($"Error de autenticación");
+                btnProcesarArchivosIn.Enabled = true;
                 return;
             }
 
@@ -183,26 +183,30 @@ namespace MiddlewareArchivos
                     }
                 }
             }
-
             LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSeparador());
             btnProcesarArchivosIn.Enabled = true;
             MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
         }
 
-        private void btnProcesarArchivosOut_Click(object sender, EventArgs e)
+        private async void btnProcesarArchivosOut_Click(object sender, EventArgs e)
         {
-            string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
-            if(pathsArchivosOut.Length > 0)
-            {
-                foreach (string path in pathsArchivosOut)
-                {
-                    string[] splitedPath = path.Split("\\");
-                    string nombreArchivo = splitedPath[splitedPath.Length - 1];
-                    File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
-                    File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
-                }
-                MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
-            }
+            btnProcesarArchivosOut.Enabled = false;
+            ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
+            await procesamientoController.procesarArchivosOutAsync(empresas[0]);
+
+            //string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
+            //if(pathsArchivosOut.Length > 0)
+            //{
+            //    foreach (string path in pathsArchivosOut)
+            //    {
+            //        string[] splitedPath = path.Split("\\");
+            //        string nombreArchivo = splitedPath[splitedPath.Length - 1];
+            //        File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
+            //        File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
+            //    }
+            //    MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
+            //}
+            btnProcesarArchivosOut.Enabled = true;
         }
 
     }

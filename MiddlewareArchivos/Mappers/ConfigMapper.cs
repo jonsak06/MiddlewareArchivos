@@ -75,5 +75,18 @@ namespace MiddlewareArchivos.Mappers
                 default: return String.Empty;
             }
         }
+
+        public int GetCodigoInterfaz(EnumCodigosInterfaces codigo)
+        {
+            switch (codigo)
+            {
+                case EnumCodigosInterfaces.AjustesDeStock: return CodigosInterfacesConstants.AjustesDeStock;
+                case EnumCodigosInterfaces.ConfirmacionDePedido: return CodigosInterfacesConstants.ConfirmacionDePedido;
+                case EnumCodigosInterfaces.ConfirmacionDeRecepcion: return CodigosInterfacesConstants.ConfirmacionDeRecepcion;
+                case EnumCodigosInterfaces.Facturacion: return CodigosInterfacesConstants.Facturacion;
+                case EnumCodigosInterfaces.PedidosAnulados: return CodigosInterfacesConstants.PedidosAnulados;
+                default: return 0;
+            }
+        }
     }
 }

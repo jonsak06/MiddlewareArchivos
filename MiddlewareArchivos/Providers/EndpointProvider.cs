@@ -32,6 +32,10 @@ namespace MiddlewareArchivos.Providers
         {
             return getEndpoint("Get", api);
         }
+        public string getEndpointGet(int codigo)
+        {
+            return getEndpoint("Get", codigo);
+        }
         public string getEndpointGet2(string api)
         {
             return getEndpoint("Get2", api);
@@ -40,7 +44,12 @@ namespace MiddlewareArchivos.Providers
         private string getEndpoint(string method, string api)
         {
             return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Nombre").Value == api).Elements().Where(e => e.Name == method).FirstOrDefault().Value;
-
         }
+        private string getEndpoint(string method, int codigo)
+        {
+            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Codigo").Value == codigo.ToString()).Elements().Where(e => e.Name == method).FirstOrDefault().Value;
+        }
+
+
     }
 }
