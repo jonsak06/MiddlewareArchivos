@@ -190,8 +190,8 @@ namespace MiddlewareArchivos
                 }
             }
             LogsController.escribirEnLog(pathCarpetaInLog, LogsController.mensajeSeparador());
-            btnProcesarArchivosIn.Enabled = true;
             MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
+            btnProcesarArchivosIn.Enabled = true;
         }
 
         private async void btnProcesarArchivosOut_Click(object sender, EventArgs e)
@@ -203,12 +203,22 @@ namespace MiddlewareArchivos
             string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
             if (pathsArchivosOut.Length > 0)
             {
-                foreach (string path in pathsArchivosOut)
+                foreach (string pathArchivo in pathsArchivosOut)
                 {
-                    string[] splitedPath = path.Split("\\");
+                    string[] splitedPath = pathArchivo.Split("\\");
                     string nombreArchivo = splitedPath[splitedPath.Length - 1];
-                    File.Copy(path, $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}");
-                    File.Move(path, $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}");
+
+                    string pathArchivoBackup = $"{this.carpetasController.PathCarpetaOutBackup}{nombreArchivo}";
+                    if (!File.Exists(pathArchivoBackup))
+                        File.Copy(pathArchivo, pathArchivoBackup);
+                    else
+                        File.Delete(pathArchivo);
+
+                    string pathArchivoPendiente = $"{this.carpetasController.PathCarpetaOutPendiente}{nombreArchivo}";
+                    if (!File.Exists(pathArchivoPendiente))
+                        File.Move(pathArchivo, pathArchivoPendiente);
+                    else
+                        File.Delete(pathArchivo);
                 }
                 MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
             }

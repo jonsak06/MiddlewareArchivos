@@ -54,19 +54,53 @@ namespace MiddlewareArchivos.Controllers
         }
         private void generarArchivoErr(string nombreArchivo, string detalles)
         {
-            var det = JObject.Parse(detalles);
-            using (StreamWriter sw = File.AppendText($"{this.pathCarpetaProcesadoIn}{nombreArchivo}.err"))
+            var pathArchivo = $"{this.pathCarpetaProcesadoIn}{nombreArchivo}.err";
+            if (!File.Exists(pathArchivo))
             {
-                sw.WriteLine(det);
+                var det = JObject.Parse(detalles);
+                using (StreamWriter sw = File.AppendText(pathArchivo))
+                {
+                    sw.WriteLine(det);
+                }
             }
         }
         private void generarArchivoOut(string nombreEmpresa, int numeroEjecucion, string nombreInterfaz, string contenido)
         {
-            var cont = JObject.Parse(contenido);
-            using (StreamWriter sw = File.AppendText($"{this.pathCarpetaEnProcesoOut}{nombreEmpresa}.{numeroEjecucion}.{nombreInterfaz}"))
+            var pathArchivo = $"{this.pathCarpetaEnProcesoOut}{nombreEmpresa}.{numeroEjecucion}.{nombreInterfaz}";
+            if (!File.Exists(pathArchivo))
             {
-                sw.WriteLine(cont);
+                var cont = JObject.Parse(contenido);
+                using (StreamWriter sw = File.AppendText(pathArchivo))
+                {
+                    sw.WriteLine(cont);
+                }
             }
+        }
+        private NameValueCollection crearColeccionEjecuciones(string contenido)
+        {
+            var json = JObject.Parse(contenido);
+            var ejecucionesJson = json["ejecuciones"];
+            var ejecuciones = new NameValueCollection();
+            foreach (var ejec in ejecucionesJson)
+            {
+                ejecuciones.Add(ejec["codigoInterfazExterna"].ToString(), ejec["numeroInterfazEjecucion"].ToString());
+            }
+            return ejecuciones;
+        }
+        private async Task<string> realizarGetRequest(Uri requestUri)
+        {
+            string contenido = null;
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
+
+                using (var response = await client.GetAsync(requestUri))
+                {
+                    if (response.IsSuccessStatusCode)
+                        contenido = await response.Content.ReadAsStringAsync();
+                }
+            }
+            return contenido;
         }
         public bool empresaCorrecta(Archivo archivo)
         {
@@ -113,31 +147,14 @@ namespace MiddlewareArchivos.Controllers
             if (metodoSalida == metodoPolling)
             {
                 var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
-                string contenido = null;
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
-
-                    using (var response = await client.GetAsync(requestUri))
-                    {
-                        if (response.IsSuccessStatusCode)
-                            contenido = await response.Content.ReadAsStringAsync();
-                    }
-                }
+                var contenido = await realizarGetRequest(requestUri);
 
                 if (contenido == null)
                     return false;
 
                 if (contenido != String.Empty)
                 {
-                    //creación de colección con ejecuciones
-                    var json = JObject.Parse(contenido);
-                    var ejecucionesJson = json["ejecuciones"];
-                    var ejecuciones = new NameValueCollection();
-                    foreach (var ejec in ejecucionesJson)
-                    {
-                        ejecuciones.Add(ejec["codigoInterfazExterna"].ToString(), ejec["numeroInterfazEjecucion"].ToString());
-                    }
+                    var ejecuciones = crearColeccionEjecuciones(contenido);
 
                     foreach (string interfaz in ejecuciones.AllKeys)
                     {
@@ -151,18 +168,8 @@ namespace MiddlewareArchivos.Controllers
                             int numeroEjecucion = int.Parse(ejecucion);
 
                             requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
+                            contenido = await realizarGetRequest(requestUri);
 
-                            using (var client = new HttpClient())
-                            {
-                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
-
-                                using (var response = await client.GetAsync(requestUri))
-                                {
-                                    if (response.IsSuccessStatusCode)
-                                        contenido = await response.Content.ReadAsStringAsync();
-                                        Debug.WriteLine(contenido);
-                                }
-                            }
                             generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido);
                         }
 
