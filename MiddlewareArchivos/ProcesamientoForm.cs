@@ -198,7 +198,13 @@ namespace MiddlewareArchivos
         {
             btnProcesarArchivosOut.Enabled = false;
             ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
-            await procesamientoController.procesarArchivosOutAsync(empresas[0], this.metodoSalida);
+            if(!await procesamientoController.procesarArchivosOutAsync(empresas[0], this.metodoSalida))
+            {
+                //log
+                MessageBox.Show($"Error al obtener ejecuciones de la interfaz \"Salida\"");
+                btnProcesarArchivosOut.Enabled = true;
+                return;
+            }
 
             string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
             if (pathsArchivosOut.Length > 0)
@@ -221,6 +227,10 @@ namespace MiddlewareArchivos
                         File.Delete(pathArchivo);
                 }
                 MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
+            } 
+            else
+            {
+                MessageBox.Show($"No se generaron nuevos archivos");
             }
             btnProcesarArchivosOut.Enabled = true;
         }

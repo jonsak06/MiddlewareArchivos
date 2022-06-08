@@ -76,31 +76,38 @@ namespace MiddlewareArchivos.Controllers
                 }
             }
         }
-        private NameValueCollection crearColeccionEjecuciones(string contenido)
+        private SortedDictionary<string, string> crearDiccionarioEjecuciones(string contenido)
         {
             var json = JObject.Parse(contenido);
             var ejecucionesJson = json["ejecuciones"];
-            var ejecuciones = new NameValueCollection();
+            var ejecuciones = new SortedDictionary<string, string>();
+
             foreach (var ejec in ejecucionesJson)
             {
-                ejecuciones.Add(ejec["codigoInterfazExterna"].ToString(), ejec["numeroInterfazEjecucion"].ToString());
+                ejecuciones.Add(ejec["numeroInterfazEjecucion"].ToString(), ejec["codigoInterfazExterna"].ToString());
             }
             return ejecuciones;
         }
-        private async Task<string> realizarGetRequest(Uri requestUri)
+        private async Task<KeyValuePair<bool, string>> realizarGetRequest(Uri requestUri)//key = succesful response?, value = contenido
         {
-            string contenido = null;
+            string contenido = String.Empty;
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
                 using (var response = await client.GetAsync(requestUri))
                 {
+                    contenido = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
-                        contenido = await response.Content.ReadAsStringAsync();
+                    {
+                        return new KeyValuePair<bool, string>(true, contenido);
+                    }
+                    else
+                    {
+                        return new KeyValuePair<bool, string>(false, contenido);
+                    }
                 }
             }
-            return contenido;
         }
         public bool empresaCorrecta(Archivo archivo)
         {
@@ -122,14 +129,11 @@ namespace MiddlewareArchivos.Controllers
                 request.Content = new StringContent(archivo.Contenido, Encoding.UTF8, "application/json");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
-
                 using (var response = await client.SendAsync(request))
                 {
                     var details = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
-                    {
                         return true;
-                    }
                     else
                     {
                         generarArchivoErr(archivo.Nombre, details);
@@ -139,46 +143,80 @@ namespace MiddlewareArchivos.Controllers
             }
 
         }
-        public async Task<bool> procesarArchivosOutAsync(Empresa empresa, string metodoSalida)//controlar errores y revisar que devuelve cuando no hay ejecuciones
+        public async Task<bool> procesarArchivosOutAsync(Empresa empresa, string metodoSalida)
         {
-            var metodoPolling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
-            var metodoWebhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
+            var polling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
+            var webhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
 
-            if (metodoSalida == metodoPolling)
+            if (metodoSalida == polling)
             {
+                //Obtención de ejecuciones pendientes
                 var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
                 var contenido = await realizarGetRequest(requestUri);
 
-                if (contenido == null)
+                if (!contenido.Key)
                     return false;
 
-                if (contenido != String.Empty)
+                //Crea diccionario key = número de ejecucion, value = codigo de interfaz
+                var ejecuciones = crearDiccionarioEjecuciones(contenido.Value);
+
+                if (ejecuciones.Count() == 0)
                 {
-                    var ejecuciones = crearColeccionEjecuciones(contenido);
-
-                    foreach (string interfaz in ejecuciones.AllKeys)
-                    {
-                        int codigoInterfaz = int.Parse(interfaz);
-                        string endpoint = this.endpointProvider.getEndpointGet(codigoInterfaz);
-                        string nombreInterfaz = endpoint.Split("/")[0];
-                        var ejecucionesDeInterfaz = ejecuciones[interfaz].Split(",");
-
-                        foreach (string ejecucion in ejecucionesDeInterfaz)
-                        {
-                            int numeroEjecucion = int.Parse(ejecucion);
-
-                            requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
-                            contenido = await realizarGetRequest(requestUri);
-
-                            generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido);
-                        }
-
-                    }
+                    //log
                     return true;
                 }
 
+                foreach (KeyValuePair<string, string> kvp in ejecuciones)
+                {
+                    int numeroEjecucion = int.Parse(kvp.Key);
+                    int codigoInterfaz = int.Parse(kvp.Value);
+
+                    //Consulta estado de ejecución
+                    string endpoint = this.endpointProvider.getEndpointGet2(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
+                    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
+                    contenido = await realizarGetRequest(requestUri);
+
+                    if (!contenido.Key)
+                        continue;
+
+                    endpoint = this.endpointProvider.getEndpointGet(codigoInterfaz);
+                    string nombreInterfaz = endpoint.Split("/")[0];
+
+                    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
+                    contenido = await realizarGetRequest(requestUri);
+
+                    generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido.Value);
+
+                    //Confirmar lectura de ejecucion
+                    endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
+                    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}");
+
+                    using (var client = new HttpClient())
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
+                    {
+                        string cont = $"{{'empresa': {empresa.Id}, 'numeroInterfazEjecucion': {numeroEjecucion}, 'codigoInterfazExterna': {codigoInterfaz}, 'resultado': true}}";
+                        request.Content = new StringContent(cont, Encoding.UTF8, "application/json");
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
+
+                        using (var response = await client.SendAsync(request))
+                        {
+                            var details = await response.Content.ReadAsStringAsync();
+                            if (response.IsSuccessStatusCode)
+                            {
+                                Debug.WriteLine(details);
+                                //log
+                            }
+                            else
+                            {
+                                Debug.WriteLine(details);
+                                //log
+                            }
+                        }
+                    }
+                }
+                return true;
             }
-            else if (metodoSalida == metodoWebhook)
+            else if (metodoSalida == webhook)
             {
                 return false;
             }
