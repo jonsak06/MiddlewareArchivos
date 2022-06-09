@@ -52,7 +52,7 @@ namespace MiddlewareArchivos.Controllers
             }
             return false;
         }
-        public static bool crearCtrlsec(string nombreEmpresa, string pathCarpetaCtrl)
+        public static void crearCtrlsec(string nombreEmpresa, string pathCarpetaCtrl)
         {
             string pathArchivoCtrlsec = getPathArchivoCtrlsec(pathCarpetaCtrl, nombreEmpresa);
             if (!File.Exists(pathArchivoCtrlsec))
@@ -63,9 +63,7 @@ namespace MiddlewareArchivos.Controllers
                     sw.WriteLine("Fin:9999999");
                     sw.WriteLine("Ultima secuencia procesada:0");
                 }
-                return true;
             }
-            return false;
         }
     }
 }
