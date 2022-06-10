@@ -49,18 +49,11 @@ namespace MiddlewareArchivos
 
         private async void btnProcesarArchivosIn_Click(object sender, EventArgs e)
         {
+            btnProcesarArchivosIn.Enabled = false;
             var loggerIn = NLog.LogManager.GetLogger("loggerIn");
 
-            btnProcesarArchivosIn.Enabled = false;
             ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
             string pathCarpetaInLog = this.carpetasController.PathCarpetaInLog;
-
-            #region testeo con un archivo
-            //Archivo archivo = new Archivo("acme.1.Producto.prueba1");
-            //archivo.Contenido = File.ReadAllText($"C:\\Pasantia\\IN\\PENDIENTE\\acme.1.Producto.prueba1");
-            //archivo.Empresa = empresas.FirstOrDefault(e => e.Nombre == archivo.NombreEmpresa);
-
-            #endregion
 
             if (procesamientoController.token == String.Empty)
             {
@@ -69,6 +62,8 @@ namespace MiddlewareArchivos
                 btnProcesarArchivosIn.Enabled = true;
                 return;
             }
+
+            loggerIn.Info($"Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
 
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
             loggerIn.Info($"{pathsArchivosIn.Length} archivos detectados en la carpeta {this.carpetasController.PathCarpetaInPendiente}");
@@ -187,27 +182,39 @@ namespace MiddlewareArchivos
                     }
                 }
             }
-            MessageBox.Show($"Finalizado el procesamiento de archivos de IN");
+            loggerIn.Info($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
+            MessageBox.Show($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
             btnProcesarArchivosIn.Enabled = true;
         }
 
         private async void btnProcesarArchivosOut_Click(object sender, EventArgs e)
         {
-            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
-
             btnProcesarArchivosOut.Enabled = false;
+            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
             ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
-            if(!await procesamientoController.procesarArchivosOutAsync(empresas[0], this.metodoSalida))
+            
+            if (procesamientoController.token == String.Empty)
             {
-                //log
-                MessageBox.Show($"Error al obtener ejecuciones de la interfaz \"Salida\"");
+                loggerOut.Error("Error al solicitar token de autenticación");
+                MessageBox.Show($"Error de autenticación");
                 btnProcesarArchivosOut.Enabled = true;
                 return;
+            }
+
+            loggerOut.Info($"Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut} con el método {this.metodoSalida}");
+
+            foreach(var empresa in this.empresas)
+            {
+                if(!await procesamientoController.procesarArchivosOutAsync(empresa, this.metodoSalida))
+                {
+                    loggerOut.Error($"Error al procesar los archivos para la empresa {empresa.Id} ({empresa.Nombre})");
+                }
             }
 
             string[] pathsArchivosOut = Directory.GetFiles(this.carpetasController.PathCarpetaOutEnProceso);
             if (pathsArchivosOut.Length > 0)
             {
+                loggerOut.Info($"Se generaron {pathsArchivosOut.Length} archivos nuevos en {this.carpetasController.PathCarpetaOutEnProceso}");
                 foreach (string pathArchivo in pathsArchivosOut)
                 {
                     string[] splitedPath = pathArchivo.Split("\\");
@@ -225,12 +232,16 @@ namespace MiddlewareArchivos
                     else
                         File.Delete(pathArchivo);
                 }
-                MessageBox.Show($"Finalizado el procesamiento de archivos de OUT");
+                loggerOut.Info($"Movidos los archivos a {this.carpetasController.PathCarpetaOutPendiente} y respaldados en {this.carpetasController.PathCarpetaOutBackup}");
+                MessageBox.Show($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}");
             } 
             else
             {
-                MessageBox.Show($"No se generaron nuevos archivos");
+                loggerOut.Info($"No se generaron nuevos archivos en {this.carpetasController.PathCarpetaOutEnProceso}");
+                MessageBox.Show($"No se generaron nuevos archivos en {this.carpetasController.PathCarpetaOutEnProceso}");
             }
+
+            loggerOut.Info($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}");
             btnProcesarArchivosOut.Enabled = true;
         }
 

@@ -145,6 +145,7 @@ namespace MiddlewareArchivos.Controllers
         }
         public async Task<bool> procesarArchivosOutAsync(Empresa empresa, string metodoSalida)
         {
+            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
             var polling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
             var webhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
 
@@ -162,10 +163,11 @@ namespace MiddlewareArchivos.Controllers
 
                 if (ejecuciones.Count() == 0)
                 {
-                    //log
+                    loggerOut.Info($"No se encontraron ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
                     return true;
                 }
 
+                loggerOut.Info($"Se encontraron {ejecuciones.Count} ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
                 foreach (KeyValuePair<string, string> kvp in ejecuciones)
                 {
                     int numeroEjecucion = int.Parse(kvp.Key);
@@ -177,7 +179,10 @@ namespace MiddlewareArchivos.Controllers
                     contenido = await realizarGetRequest(requestUri);
 
                     if (!contenido.Key)
+                    {
+                        loggerOut.Warn($"La ejecución {numeroEjecucion} de la empresa {empresa.Id} no está lista para su lectura");
                         continue;
+                    }
 
                     endpoint = this.endpointProvider.getEndpointGet(codigoInterfaz);
                     string nombreInterfaz = endpoint.Split("/")[0];
@@ -186,6 +191,7 @@ namespace MiddlewareArchivos.Controllers
                     contenido = await realizarGetRequest(requestUri);
 
                     generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido.Value);
+                    loggerOut.Info($"Generado el archivo {empresa.Nombre}.{numeroEjecucion}.{nombreInterfaz} en {this.pathCarpetaEnProcesoOut}");
 
                     //Confirmar lectura de ejecucion
                     endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
@@ -203,13 +209,11 @@ namespace MiddlewareArchivos.Controllers
                             var details = await response.Content.ReadAsStringAsync();
                             if (response.IsSuccessStatusCode)
                             {
-                                Debug.WriteLine(details);
-                                //log
+                                loggerOut.Info($"Confirmada la lectura de la ejecucion {numeroEjecucion} de la empresa {empresa.Id}");
                             }
                             else
                             {
-                                Debug.WriteLine(details);
-                                //log
+                                loggerOut.Error($"Error al confirmar lectura de la ejecución {numeroEjecucion} de la empresa {empresa.Id}. Detalles: {details}");
                             }
                         }
                     }
