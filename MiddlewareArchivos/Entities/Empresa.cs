@@ -11,5 +11,6 @@ namespace MiddlewareArchivos.Entities
         public long Id { get; set; }
         public string Nombre { get; set; }
         public bool ManejaSecuencial { get; set; }
+        public string MetodoSalida { get; set; }
     }
 }

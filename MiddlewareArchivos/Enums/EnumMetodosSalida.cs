@@ -8,6 +8,6 @@ namespace MiddlewareArchivos.Enums
 {
     internal enum EnumMetodosSalida
     {
-        MetodoSalida, Polling, Webhook
+        Polling, Webhook
     }
 }

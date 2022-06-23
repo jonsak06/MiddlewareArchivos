@@ -1,7 +1,6 @@
 using MiddlewareArchivos.Controllers;
 using MiddlewareArchivos.Entities;
 using MiddlewareArchivos.Enums;
-using MiddlewareArchivos.Mappers;
 using MiddlewareArchivos.Providers;
 using System.Configuration;
 using System.Diagnostics;
@@ -14,7 +13,6 @@ namespace MiddlewareArchivos
         private CarpetasController carpetasController;
         private XMLProvider provider;
         private List<Empresa> empresas;
-        private string metodoSalida;
         public ProcesamientoForm()
         {
             InitializeComponent();
@@ -22,8 +20,6 @@ namespace MiddlewareArchivos
             this.provider = new XMLProvider();
             this.empresas = new List<Empresa>();
 
-            ConfigMapper mapper = new ConfigMapper();
-            this.metodoSalida = ConfigurationManager.AppSettings[mapper.GetMetodoSalida(EnumMetodosSalida.MetodoSalida)];
         }
 
         private void ProcesamientoForm_Load(object sender, EventArgs e)
@@ -34,7 +30,8 @@ namespace MiddlewareArchivos
             {
                 Id = long.Parse(e.Elements().FirstOrDefault(e => e.Name == "Id").Value),
                 Nombre = e.Elements().FirstOrDefault(e => e.Name == "Nombre").Value,
-                ManejaSecuencial = bool.Parse(e.Elements().FirstOrDefault(e => e.Name == "Secuencia").Value)
+                ManejaSecuencial = bool.Parse(e.Elements().FirstOrDefault(e => e.Name == "Secuencia").Value),
+                MetodoSalida = e.Elements().FirstOrDefault(e => e.Name == "MetodoSalida").Value
             }).ToList();
 
             //creación de archivos .ctrlsec
@@ -63,7 +60,7 @@ namespace MiddlewareArchivos
                 return;
             }
 
-            loggerIn.Info($"Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
+            loggerIn.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}\n");
 
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
             loggerIn.Info($"{pathsArchivosIn.Length} archivos detectados en la carpeta {this.carpetasController.PathCarpetaInPendiente}");
@@ -182,7 +179,7 @@ namespace MiddlewareArchivos
                     }
                 }
             }
-            loggerIn.Info($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
+            loggerIn.Info($"\nFinalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}\n");
             MessageBox.Show($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
             btnProcesarArchivosIn.Enabled = true;
         }
@@ -201,13 +198,13 @@ namespace MiddlewareArchivos
                 return;
             }
 
-            loggerOut.Info($"Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut} con el método {this.metodoSalida}");
+            loggerOut.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}");
 
-            foreach(var empresa in this.empresas)
+            foreach(var empresa in empresas)
             {
-                if(!await procesamientoController.procesarArchivosOutAsync(empresa, this.metodoSalida))
+                if (!await procesamientoController.procesarArchivosOutAsync(empresa))
                 {
-                    loggerOut.Error($"Error al procesar los archivos para la empresa {empresa.Id} ({empresa.Nombre})");
+                    loggerOut.Error($"Error en el procesamiento de archivos para la empresa {empresa.Id} ({empresa.Nombre})");
                 }
             }
 
@@ -241,7 +238,7 @@ namespace MiddlewareArchivos
                 MessageBox.Show($"No se generaron nuevos archivos en {this.carpetasController.PathCarpetaOutEnProceso}");
             }
 
-            loggerOut.Info($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}");
+            loggerOut.Info($"\nFinalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}\n");
             btnProcesarArchivosOut.Enabled = true;
         }
 

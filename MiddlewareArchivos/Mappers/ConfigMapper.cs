@@ -69,7 +69,6 @@ namespace MiddlewareArchivos.Mappers
         {
             switch (metodo)
             {
-                case EnumMetodosSalida.MetodoSalida: return MetodosSalidaConstants.MetodoSalida;
                 case EnumMetodosSalida.Polling: return MetodosSalidaConstants.Polling;
                 case EnumMetodosSalida.Webhook: return MetodosSalidaConstants.Webhook;
                 default: return String.Empty;

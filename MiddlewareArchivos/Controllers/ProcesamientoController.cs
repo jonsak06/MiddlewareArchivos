@@ -19,7 +19,6 @@ namespace MiddlewareArchivos.Controllers
     internal class ProcesamientoController
     {
         private EndpointProvider endpointProvider;
-        HttpClient client;
         public string token;
         private string pathCarpetaProcesadoIn, pathCarpetaEnProcesoOut;
         ConfigMapper mapper;
@@ -27,7 +26,6 @@ namespace MiddlewareArchivos.Controllers
         private ProcesamientoController()
         {
             this.endpointProvider = new EndpointProvider();
-            this.client = new HttpClient();
             this.pathCarpetaProcesadoIn = CarpetasController.Instance.PathCarpetaInProcesado;
             this.pathCarpetaEnProcesoOut = CarpetasController.Instance.PathCarpetaOutEnProceso;
             mapper = new ConfigMapper();
@@ -93,7 +91,7 @@ namespace MiddlewareArchivos.Controllers
         private async Task<KeyValuePair<bool, string>> realizarGetRequest(Uri requestUri)//key = succesful response?, value = contenido
         {
             string contenido = String.Empty;
-            using (this.client)
+            using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
@@ -124,7 +122,7 @@ namespace MiddlewareArchivos.Controllers
         {
             var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointPost(archivo.Api)}");
 
-            using (this.client)
+            using (var client = new HttpClient())
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
             {
                 client.Timeout = TimeSpan.FromMinutes(10);
@@ -145,13 +143,13 @@ namespace MiddlewareArchivos.Controllers
             }
 
         }
-        public async Task<bool> procesarArchivosOutAsync(Empresa empresa, string metodoSalida)
+        public async Task<bool> procesarArchivosOutAsync(Empresa empresa)
         {
             var loggerOut = NLog.LogManager.GetLogger("loggerOut");
             var polling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
             var webhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
 
-            if (metodoSalida == polling)
+            if (empresa.MetodoSalida == polling)
             {
                 //Obtención de ejecuciones pendientes
                 var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
@@ -199,7 +197,7 @@ namespace MiddlewareArchivos.Controllers
                 //    endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
                 //    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}");
 
-                //    using (this.client)
+                //    using (var client = new HttpClient())
                 //    using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
                 //    {
                 //        string cont = $"{{'empresa': {empresa.Id}, 'numeroInterfazEjecucion': {numeroEjecucion}, 'codigoInterfazExterna': {codigoInterfaz}, 'resultado': true}}";
@@ -223,8 +221,9 @@ namespace MiddlewareArchivos.Controllers
                 }
                 return true;
             }
-            else if (metodoSalida == webhook)
+            else if (empresa.MetodoSalida == webhook)
             {
+                loggerOut.Info("Método Webhook aún no implementado");
                 return false;
             }
             return false;
