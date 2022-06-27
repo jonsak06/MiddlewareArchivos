@@ -12,5 +12,6 @@ namespace MiddlewareArchivos.Entities
         public string Nombre { get; set; }
         public bool ManejaSecuencial { get; set; }
         public string MetodoSalida { get; set; }
+        public string WebhookSecret { get; set; }
     }
 }

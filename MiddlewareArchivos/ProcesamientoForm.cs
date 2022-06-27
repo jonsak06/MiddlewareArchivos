@@ -31,7 +31,8 @@ namespace MiddlewareArchivos
                 Id = long.Parse(e.Elements().FirstOrDefault(e => e.Name == "Id").Value),
                 Nombre = e.Elements().FirstOrDefault(e => e.Name == "Nombre").Value,
                 ManejaSecuencial = bool.Parse(e.Elements().FirstOrDefault(e => e.Name == "Secuencia").Value),
-                MetodoSalida = e.Elements().FirstOrDefault(e => e.Name == "MetodoSalida").Value
+                MetodoSalida = e.Elements().FirstOrDefault(e => e.Name == "MetodoSalida").Value,
+                WebhookSecret = e.Elements().FirstOrDefault(e => e.Name == "WebhookSecret").Value
             }).ToList();
 
             //creación de archivos .ctrlsec
