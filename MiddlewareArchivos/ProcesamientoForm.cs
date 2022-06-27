@@ -61,7 +61,7 @@ namespace MiddlewareArchivos
                 return;
             }
 
-            loggerIn.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}\n");
+            loggerIn.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
 
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
             loggerIn.Info($"{pathsArchivosIn.Length} archivos detectados en la carpeta {this.carpetasController.PathCarpetaInPendiente}");

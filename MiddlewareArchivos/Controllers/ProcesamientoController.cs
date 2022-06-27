@@ -166,7 +166,7 @@ namespace MiddlewareArchivos.Controllers
             var loggerOut = NLog.LogManager.GetLogger("loggerOut");
 
             //Obtención de ejecuciones pendientes
-            var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
+            var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointEjecucionesPendientes()}?empresa={empresa.Id}");
             var contenido = await realizarGetRequest(requestUri);
 
             if (!contenido.Key)
@@ -188,7 +188,7 @@ namespace MiddlewareArchivos.Controllers
                 int codigoInterfaz = int.Parse(kvp.Value);
 
                 //Consulta estado de ejecución
-                string endpoint = this.endpointProvider.getEndpointGet2(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
+                string endpoint = this.endpointProvider.getEndpointConsultarEstado();
                 requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
                 contenido = await realizarGetRequest(requestUri);
 

@@ -26,30 +26,20 @@ namespace MiddlewareArchivos.Providers
 
         public string getEndpointPost(string api)
         {
-            return getEndpoint("Post", api);
+            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Nombre").Value == api).Elements().Where(e => e.Name == "Post").FirstOrDefault().Value;
         }
-        public string getEndpointGet(string api)
+        public string getEndpointGet(int codigoInterfaz)
         {
-            return getEndpoint("Get", api);
+            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Codigo").Value == codigoInterfaz.ToString()).Elements().Where(e => e.Name == "Get").FirstOrDefault().Value;
         }
-        public string getEndpointGet(int codigo)
+        public string getEndpointEjecucionesPendientes()
         {
-            return getEndpoint("Get", codigo);
+            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Nombre").Value == "Salida").Elements().Where(e => e.Name == "GetEjecuciones").FirstOrDefault().Value;
         }
-        public string getEndpointGet2(string api)
+        public string getEndpointConsultarEstado()
         {
-            return getEndpoint("Get2", api);
+            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Nombre").Value == "Salida").Elements().Where(e => e.Name == "ConsultarEstado").FirstOrDefault().Value;
         }
-
-        private string getEndpoint(string method, string api)
-        {
-            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Nombre").Value == api).Elements().Where(e => e.Name == method).FirstOrDefault().Value;
-        }
-        private string getEndpoint(string method, int codigo)
-        {
-            return documentoInterfaces.Descendants("Interfaz").Where(e => e.Element("Codigo").Value == codigo.ToString()).Elements().Where(e => e.Name == method).FirstOrDefault().Value;
-        }
-
 
     }
 }
