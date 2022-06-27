@@ -147,55 +147,67 @@ namespace MiddlewareArchivos.Controllers
         }
         public async Task<bool> procesarArchivosOutAsync(Empresa empresa)
         {
-            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
             var polling = this.mapper.GetMetodoSalida(EnumMetodosSalida.Polling);
             var webhook = this.mapper.GetMetodoSalida(EnumMetodosSalida.Webhook);
 
             if (empresa.MetodoSalida == polling)
             {
-                //Obtención de ejecuciones pendientes
-                var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
-                var contenido = await realizarGetRequest(requestUri);
+                return await procesarConPolling(empresa);
+            }
+            else if (empresa.MetodoSalida == webhook)
+            {
+                return await procesarConWebhook(empresa);
+            }
+            return false;
+        }
+
+        private async Task<bool> procesarConPolling(Empresa empresa)
+        {
+            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
+
+            //Obtención de ejecuciones pendientes
+            var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointGet(mapper.GetNombreInterfaz(EnumInterfaces.Salida))}?empresa={empresa.Id}");
+            var contenido = await realizarGetRequest(requestUri);
+
+            if (!contenido.Key)
+                return false;
+
+            //Crea diccionario key = número de ejecucion, value = codigo de interfaz
+            var ejecuciones = crearDiccionarioEjecuciones(contenido.Value);
+
+            if (ejecuciones.Count() == 0)
+            {
+                loggerOut.Info($"No se encontraron ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
+                return true;
+            }
+
+            loggerOut.Info($"Se encontraron {ejecuciones.Count} ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
+            foreach (KeyValuePair<string, string> kvp in ejecuciones)
+            {
+                int numeroEjecucion = int.Parse(kvp.Key);
+                int codigoInterfaz = int.Parse(kvp.Value);
+
+                //Consulta estado de ejecución
+                string endpoint = this.endpointProvider.getEndpointGet2(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
+                requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
+                contenido = await realizarGetRequest(requestUri);
 
                 if (!contenido.Key)
-                    return false;
-
-                //Crea diccionario key = número de ejecucion, value = codigo de interfaz
-                var ejecuciones = crearDiccionarioEjecuciones(contenido.Value);
-
-                if (ejecuciones.Count() == 0)
                 {
-                    loggerOut.Info($"No se encontraron ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
-                    return true;
+                    loggerOut.Warn($"La ejecución {numeroEjecucion} de la empresa {empresa.Id} no está lista para su lectura");
+                    continue;
                 }
 
-                loggerOut.Info($"Se encontraron {ejecuciones.Count} ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
-                foreach (KeyValuePair<string, string> kvp in ejecuciones)
-                {
-                    int numeroEjecucion = int.Parse(kvp.Key);
-                    int codigoInterfaz = int.Parse(kvp.Value);
+                endpoint = this.endpointProvider.getEndpointGet(codigoInterfaz);
+                string nombreInterfaz = endpoint.Split("/")[0];
 
-                    //Consulta estado de ejecución
-                    string endpoint = this.endpointProvider.getEndpointGet2(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
-                    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
-                    contenido = await realizarGetRequest(requestUri);
+                requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
+                contenido = await realizarGetRequest(requestUri);
 
-                    if (!contenido.Key)
-                    {
-                        loggerOut.Warn($"La ejecución {numeroEjecucion} de la empresa {empresa.Id} no está lista para su lectura");
-                        continue;
-                    }
+                generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido.Value);
+                loggerOut.Info($"Generado el archivo {numeroEjecucion}.{empresa.Nombre}.{nombreInterfaz} en {this.pathCarpetaEnProcesoOut}");
 
-                    endpoint = this.endpointProvider.getEndpointGet(codigoInterfaz);
-                    string nombreInterfaz = endpoint.Split("/")[0];
-
-                    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}?nroEjecucion={numeroEjecucion}&empresa={empresa.Id}");
-                    contenido = await realizarGetRequest(requestUri);
-
-                    generarArchivoOut(empresa.Nombre, numeroEjecucion, nombreInterfaz, contenido.Value);
-                    loggerOut.Info($"Generado el archivo {empresa.Nombre}.{numeroEjecucion}.{nombreInterfaz} en {this.pathCarpetaEnProcesoOut}");
-
-                    //Confirmar lectura de ejecucion
+                //Confirmar lectura de ejecucion
                 //    endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
                 //    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}");
 
@@ -220,16 +232,16 @@ namespace MiddlewareArchivos.Controllers
                 //        }
                 //    }
 
-                }
-                return true;
             }
-            else if (empresa.MetodoSalida == webhook)
-            {
-                loggerOut.Info("Método Webhook aún no implementado");
-                return false;
-            }
+            return true;
+        }
+        private async Task<bool> procesarConWebhook(Empresa empresa)
+        {
+            var loggerOut = NLog.LogManager.GetLogger("loggerOut");
+
+            loggerOut.Info("Método Webhook aún no implementado");
             return false;
         }
-
     }
+
 }
