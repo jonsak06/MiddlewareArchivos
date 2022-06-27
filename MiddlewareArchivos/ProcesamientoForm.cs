@@ -119,16 +119,18 @@ namespace MiddlewareArchivos
                         File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
                         loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {this.carpetasController.PathCarpetaInEnProceso}");
 
-                        if (await procesamientoController.procesarArchivoInAsync(archivo))
+                        var resultado = await procesamientoController.procesarArchivoInAsync(archivo);
+                        if (resultado.Key)
                         {
                             loggerIn.Info($"Procesado el archivo {archivo.Nombre} exitosamente");
+                            File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{resultado.Value}.{archivo.Nombre}");
                         }
                         else
                         {
                             loggerIn.Error($"Archivo {archivo.Nombre} no se pudo procesar correctamente, generado {archivo.Nombre}.err");
+                            File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
                         }
 
-                        File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
                         loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {this.carpetasController.PathCarpetaInProcesado}");
 
                     }
@@ -145,16 +147,18 @@ namespace MiddlewareArchivos
                             File.Move($"{this.carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
                             loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {this.carpetasController.PathCarpetaInEnProceso}");
 
-                            if (await procesamientoController.procesarArchivoInAsync(archivo))
+                            var resultado = await procesamientoController.procesarArchivoInAsync(archivo);
+                            if (resultado.Key)
                             {
                                 loggerIn.Info($"Procesado el archivo {archivo.Nombre} exitosamente");
+                                File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{resultado.Value}.{archivo.Nombre}");
                             }
                             else
                             {
                                 loggerIn.Error($"Archivo {archivo.Nombre} no se pudo procesar correctamente, generado {archivo.Nombre}.err");
+                                File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
                             }
 
-                            File.Move($"{this.carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}", $"{this.carpetasController.PathCarpetaInProcesado}{archivo.Nombre}");
                             loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {this.carpetasController.PathCarpetaInProcesado}");
 
                             string pathArchivoCtrlsec = SecuenciasController.getPathArchivoCtrlsec(this.carpetasController.PathCarpetaCtrl, archivo.NombreEmpresa);

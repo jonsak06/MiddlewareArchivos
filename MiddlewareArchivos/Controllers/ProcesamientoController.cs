@@ -52,21 +52,20 @@ namespace MiddlewareArchivos.Controllers
                 return String.Empty;
             }
         }
-        private void generarArchivoErr(string nombreArchivo, string detalles)
+        private void generarArchivoErr(string nombreArchivo, JObject detalles)
         {
             var pathArchivo = $"{this.pathCarpetaProcesadoIn}{nombreArchivo}.err";
             if (!File.Exists(pathArchivo))
             {
-                var det = JObject.Parse(detalles);
                 using (StreamWriter sw = File.AppendText(pathArchivo))
                 {
-                    sw.WriteLine(det);
+                    sw.WriteLine(detalles);
                 }
             }
         }
         private void generarArchivoOut(string nombreEmpresa, int numeroEjecucion, string nombreInterfaz, string contenido)
         {
-            var pathArchivo = $"{this.pathCarpetaEnProcesoOut}{nombreEmpresa}.{numeroEjecucion}.{nombreInterfaz}";
+            var pathArchivo = $"{this.pathCarpetaEnProcesoOut}{numeroEjecucion}.{nombreEmpresa}.{nombreInterfaz}";
             if (!File.Exists(pathArchivo))
             {
                 var cont = JObject.Parse(contenido);
@@ -118,7 +117,7 @@ namespace MiddlewareArchivos.Controllers
             }
             return false;
         }
-        public async Task<bool> procesarArchivoInAsync(Archivo archivo)
+        public async Task<KeyValuePair<bool,string>> procesarArchivoInAsync(Archivo archivo)
         {
             var requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{this.endpointProvider.getEndpointPost(archivo.Api)}");
 
@@ -131,13 +130,16 @@ namespace MiddlewareArchivos.Controllers
 
                 using (var response = await client.SendAsync(request))
                 {
-                    var details = await response.Content.ReadAsStringAsync();
+                    var details = JObject.Parse(await response.Content.ReadAsStringAsync());
                     if (response.IsSuccessStatusCode)
-                        return true;
+                    {
+                        var numeroEjecucion = details["numeroInterfaz"].ToString();
+                        return new KeyValuePair<bool, string>(true,numeroEjecucion);
+                    }
                     else
                     {
                         generarArchivoErr(archivo.Nombre, details);
-                        return false;
+                        return new KeyValuePair<bool, string>(false,string.Empty);
                     }
                 }
             }
