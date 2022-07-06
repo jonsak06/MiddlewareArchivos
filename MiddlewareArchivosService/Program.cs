@@ -13,7 +13,6 @@ using IHost host = Host.CreateDefaultBuilder(args)
         LoggerProviderOptions.RegisterProviderOptions<
             EventLogSettings, EventLogLoggerProvider>(services);
 
-        services.AddSingleton<JokeService>();
         services.AddSingleton<ProcesamientoInService>();
         services.AddSingleton<ProcesamientoOutService>();
         services.AddSingleton<ConfiguracionEmpresasService>();

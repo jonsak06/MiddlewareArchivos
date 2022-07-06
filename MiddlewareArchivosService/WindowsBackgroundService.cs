@@ -5,18 +5,17 @@ namespace MiddlewareArchivosService
 {
     public class WindowsBackgroundService : BackgroundService
     {
-        private readonly JokeService _jokeService;
         private readonly ProcesamientoInService _procesamientoInService;
         ProcesamientoOutService _procesamientoOutService;
         ConfiguracionEmpresasService _configuracionEmpresasService;
         private readonly ILogger<WindowsBackgroundService> _logger;
         private List<Empresa> empresas;
 
-        public WindowsBackgroundService(JokeService jokeService, ProcesamientoInService procesamientoInService, 
+        public WindowsBackgroundService(ProcesamientoInService procesamientoInService, 
                                 ProcesamientoOutService procesamientoOutService, ConfiguracionEmpresasService configuracionEmpresasService, 
                                 ILogger<WindowsBackgroundService> logger) =>
-            (_jokeService, _procesamientoInService, _procesamientoOutService, _configuracionEmpresasService, _logger) = 
-            (jokeService, procesamientoInService, procesamientoOutService, configuracionEmpresasService, logger);
+            (_procesamientoInService, _procesamientoOutService, _configuracionEmpresasService, _logger) = 
+            (procesamientoInService, procesamientoOutService, configuracionEmpresasService, logger);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -24,9 +23,6 @@ namespace MiddlewareArchivosService
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    string joke = _jokeService.GetJoke();
-                    _logger.LogWarning("{Joke}", joke);
-
                     this.empresas = _configuracionEmpresasService.GetEmpresas();
                     await _procesamientoInService.ProcesarArchivosInAsync(this.empresas);
                     await _procesamientoOutService.ProcesarArchivosOutAsync(this.empresas);
