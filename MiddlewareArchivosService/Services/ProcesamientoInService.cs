@@ -17,12 +17,11 @@ namespace MiddlewareArchivosService.Services
             _carpetasController = CarpetasController.Instance;
             _loggerIn = NLog.LogManager.GetLogger("loggerIn");
         }
-        public async Task ProcesarArchivosInAsync(List<Empresa> empresas)
+        public async Task ProcesarArchivosInAsync(List<Empresa> empresas, ProcesamientoController procesamientoController)
         {
-            ProcesamientoController _procesamientoController = await ProcesamientoController.CreateAsync();
             string pathCarpetaInLog = _carpetasController.PathCarpetaInLog;
 
-            if (_procesamientoController.token == String.Empty)
+            if (procesamientoController.token == String.Empty)
             {
                 _loggerIn.Error("Error al solicitar token de autenticación");
                 return;
@@ -76,7 +75,7 @@ namespace MiddlewareArchivosService.Services
                         File.Move($"{_carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{_carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
                         _loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {_carpetasController.PathCarpetaInNoProcesado}");
                     }
-                    else if (!_procesamientoController.empresaCorrecta(archivo))//si id empresa del nombre del archivo != id empresa del contenido
+                    else if (!procesamientoController.empresaCorrecta(archivo))//si id empresa del nombre del archivo != id empresa del contenido
                     {
                         _loggerIn.Error($"Código de la empresa {archivo.NombreEmpresa} no corresponde con el declarado en el contenido del archivo");
                         File.Move($"{_carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{_carpetasController.PathCarpetaInNoProcesado}{archivo.Nombre}");
@@ -87,7 +86,7 @@ namespace MiddlewareArchivosService.Services
                         File.Move($"{_carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{_carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
                         _loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {_carpetasController.PathCarpetaInEnProceso}");
 
-                        var resultado = await _procesamientoController.procesarArchivoInAsync(archivo);
+                        var resultado = await procesamientoController.procesarArchivoInAsync(archivo);
                         if (resultado.Key)
                         {
                             _loggerIn.Info($"Procesado el archivo {archivo.Nombre} exitosamente");
@@ -115,7 +114,7 @@ namespace MiddlewareArchivosService.Services
                             File.Move($"{_carpetasController.PathCarpetaInPendiente}{archivo.Nombre}", $"{_carpetasController.PathCarpetaInEnProceso}{archivo.Nombre}");
                             _loggerIn.Info($"Movido el archivo {archivo.Nombre} a la carpeta {_carpetasController.PathCarpetaInEnProceso}");
 
-                            var resultado = await _procesamientoController.procesarArchivoInAsync(archivo);
+                            var resultado = await procesamientoController.procesarArchivoInAsync(archivo);
                             if (resultado.Key)
                             {
                                 _loggerIn.Info($"Procesado el archivo {archivo.Nombre} exitosamente");

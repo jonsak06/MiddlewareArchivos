@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivosService.Controllers
 {
-    internal class ProcesamientoController
+    public class ProcesamientoController
     {
         private EndpointProvider endpointProvider;
         public string token;
@@ -177,11 +177,11 @@ namespace MiddlewareArchivosService.Controllers
 
             if (ejecuciones.Count() == 0)
             {
-                loggerOut.Info($"No se encontraron ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
+                loggerOut.Info($"No se encontraron ejecuciones pendientes para la empresa [{empresa.Id}] {empresa.Nombre}");
                 return true;
             }
 
-            loggerOut.Info($"Se encontraron {ejecuciones.Count} ejecuciones pendientes para la empresa {empresa.Id} ({empresa.Nombre})");
+            loggerOut.Info($"Se encontraron {ejecuciones.Count} ejecuciones pendientes para la empresa [{empresa.Id}] {empresa.Nombre}");
             foreach (KeyValuePair<string, string> kvp in ejecuciones)
             {
                 int numeroEjecucion = int.Parse(kvp.Key);
@@ -194,7 +194,7 @@ namespace MiddlewareArchivosService.Controllers
 
                 if (!contenido.Key)
                 {
-                    loggerOut.Warn($"La ejecución {numeroEjecucion} de la empresa {empresa.Id} no está lista para su lectura");
+                    loggerOut.Warn($"La ejecución {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre} no está lista para su lectura");
                     continue;
                 }
 
@@ -223,11 +223,11 @@ namespace MiddlewareArchivosService.Controllers
                 //            var details = await response.Content.ReadAsStringAsync();
                 //            if (response.IsSuccessStatusCode)
                 //            {
-                //                loggerOut.Info($"Confirmada la lectura de la ejecucion {numeroEjecucion} de la empresa {empresa.Id}");
+                //                loggerOut.Info($"Confirmada la lectura de la ejecucion {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}");
                 //            }
                 //            else
                 //            {
-                //                loggerOut.Error($"Error al confirmar lectura de la ejecución {numeroEjecucion} de la empresa {empresa.Id}. Detalles: {details}");
+                //                loggerOut.Error($"Error al confirmar lectura de la ejecución {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}. Detalles: {details}");
                 //            }
                 //        }
                 //    }
@@ -239,7 +239,7 @@ namespace MiddlewareArchivosService.Controllers
         {
             var loggerOut = NLog.LogManager.GetLogger("loggerOut");
 
-            loggerOut.Info("Método Webhook aún no implementado");
+            loggerOut.Info($"Método Webhook aún no implementado (Empresa: [{empresa.Id}] {empresa.Nombre})");
             return false;
         }
     }

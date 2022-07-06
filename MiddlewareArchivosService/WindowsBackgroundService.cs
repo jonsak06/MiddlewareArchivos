@@ -1,3 +1,4 @@
+using MiddlewareArchivosService.Controllers;
 using MiddlewareArchivosService.Entities;
 using MiddlewareArchivosService.Services;
 
@@ -10,6 +11,7 @@ namespace MiddlewareArchivosService
         ConfiguracionEmpresasService _configuracionEmpresasService;
         private readonly ILogger<WindowsBackgroundService> _logger;
         private readonly int _intervaloEnMinutos;
+        private ProcesamientoController _procesamientoController;
         private List<Empresa> Empresas;
 
         public WindowsBackgroundService(ProcesamientoInService procesamientoInService,
@@ -28,10 +30,12 @@ namespace MiddlewareArchivosService
         {
             try
             {
+                _procesamientoController = await ProcesamientoController.CreateAsync();
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    await _procesamientoInService.ProcesarArchivosInAsync(this.Empresas);
-                    await _procesamientoOutService.ProcesarArchivosOutAsync(this.Empresas);
+                    await _procesamientoInService.ProcesarArchivosInAsync(this.Empresas, _procesamientoController);
+                    await _procesamientoOutService.ProcesarArchivosOutAsync(this.Empresas, _procesamientoController);
                     _logger.LogInformation("Procesamiento finalizado");
 
                     await Task.Delay(TimeSpan.FromMinutes(_intervaloEnMinutos), stoppingToken);

@@ -17,10 +17,8 @@ namespace MiddlewareArchivosService.Services
             _loggerOut = NLog.LogManager.GetLogger("loggerOut");
             _carpetasController = CarpetasController.Instance;
         }
-        public async Task ProcesarArchivosOutAsync(List<Empresa> empresas)
+        public async Task ProcesarArchivosOutAsync(List<Empresa> empresas, ProcesamientoController procesamientoController)
         {
-            ProcesamientoController procesamientoController = await ProcesamientoController.CreateAsync();
-
             if (procesamientoController.token == String.Empty)
             {
                 _loggerOut.Error("Error al solicitar token de autenticación");
@@ -33,7 +31,7 @@ namespace MiddlewareArchivosService.Services
             {
                 if (!await procesamientoController.procesarArchivosOutAsync(empresa))
                 {
-                    _loggerOut.Error($"Error en el procesamiento de archivos para la empresa {empresa.Id} ({empresa.Nombre})");
+                    _loggerOut.Error($"Error en el procesamiento de archivos para la empresa [{empresa.Id}] {empresa.Nombre}");
                 }
             }
 

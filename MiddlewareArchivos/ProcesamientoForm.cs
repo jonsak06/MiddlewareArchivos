@@ -209,7 +209,7 @@ namespace MiddlewareArchivos
             {
                 if (!await procesamientoController.procesarArchivosOutAsync(empresa))
                 {
-                    loggerOut.Error($"Error en el procesamiento de archivos para la empresa {empresa.Id} ({empresa.Nombre})");
+                    loggerOut.Error($"Error en el procesamiento de archivos para la empresa [{empresa.Id}] {empresa.Nombre}");
                 }
             }
 

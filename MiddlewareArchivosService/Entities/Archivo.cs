@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiddlewareArchivosService.Entities
 {
-    internal class Archivo
+    public class Archivo
     {
         public string Nombre { get; }
         public string NombreEmpresa { get; }
