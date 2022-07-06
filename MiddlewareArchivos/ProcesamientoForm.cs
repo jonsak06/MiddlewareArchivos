@@ -61,7 +61,7 @@ namespace MiddlewareArchivos
                 return;
             }
 
-            loggerIn.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
+            loggerIn.Info($"--- Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn} ---");
 
             string[] pathsArchivosIn = Directory.GetFiles(this.carpetasController.PathCarpetaInPendiente);
             loggerIn.Info($"{pathsArchivosIn.Length} archivos detectados en la carpeta {this.carpetasController.PathCarpetaInPendiente}");
@@ -184,7 +184,7 @@ namespace MiddlewareArchivos
                     }
                 }
             }
-            loggerIn.Info($"\nFinalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}\n");
+            loggerIn.Info($"--- Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn} ---");
             MessageBox.Show($"Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaIn}");
             btnProcesarArchivosIn.Enabled = true;
         }
@@ -203,7 +203,7 @@ namespace MiddlewareArchivos
                 return;
             }
 
-            loggerOut.Info($"\nIniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}");
+            loggerOut.Info($"--- Iniciado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut} ---");
 
             foreach(var empresa in empresas)
             {
@@ -243,7 +243,7 @@ namespace MiddlewareArchivos
                 MessageBox.Show($"No se generaron nuevos archivos en {this.carpetasController.PathCarpetaOutEnProceso}");
             }
 
-            loggerOut.Info($"\nFinalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut}\n");
+            loggerOut.Info($"--- Finalizado el procesamiento de archivos en {this.carpetasController.PathCarpetaOut} ---");
             btnProcesarArchivosOut.Enabled = true;
         }
 

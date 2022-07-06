@@ -9,8 +9,8 @@ namespace MiddlewareArchivosService
         ProcesamientoOutService _procesamientoOutService;
         ConfiguracionEmpresasService _configuracionEmpresasService;
         private readonly ILogger<WindowsBackgroundService> _logger;
-        private List<Empresa> empresas;
         private readonly int _intervaloEnMinutos;
+        private List<Empresa> Empresas;
 
         public WindowsBackgroundService(ProcesamientoInService procesamientoInService,
                                 ProcesamientoOutService procesamientoOutService, ConfiguracionEmpresasService configuracionEmpresasService,
@@ -20,6 +20,7 @@ namespace MiddlewareArchivosService
             _configuracionEmpresasService = configuracionEmpresasService;
             _logger = logger;
             _intervaloEnMinutos = int.Parse(System.Configuration.ConfigurationManager.AppSettings["IntervaloProcesamiento"]);
+            this.Empresas = _configuracionEmpresasService.GetEmpresas();
         }
             
 
@@ -29,9 +30,8 @@ namespace MiddlewareArchivosService
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    this.empresas = _configuracionEmpresasService.GetEmpresas();
-                    await _procesamientoInService.ProcesarArchivosInAsync(this.empresas);
-                    await _procesamientoOutService.ProcesarArchivosOutAsync(this.empresas);
+                    await _procesamientoInService.ProcesarArchivosInAsync(this.Empresas);
+                    await _procesamientoOutService.ProcesarArchivosOutAsync(this.Empresas);
                     _logger.LogInformation("Procesamiento finalizado");
 
                     await Task.Delay(TimeSpan.FromMinutes(_intervaloEnMinutos), stoppingToken);

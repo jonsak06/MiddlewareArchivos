@@ -28,7 +28,7 @@ namespace MiddlewareArchivosService.Services
                 return;
             }
 
-            _loggerIn.Info($"\nIniciado el procesamiento de archivos en {_carpetasController.PathCarpetaIn}");
+            _loggerIn.Info($"--- Iniciado el procesamiento de archivos en {_carpetasController.PathCarpetaIn} ---");
 
             string[] pathsArchivosIn = Directory.GetFiles(_carpetasController.PathCarpetaInPendiente);
             _loggerIn.Info($"{pathsArchivosIn.Length} archivos detectados en la carpeta {_carpetasController.PathCarpetaInPendiente}");
@@ -151,7 +151,7 @@ namespace MiddlewareArchivosService.Services
                     }
                 }
             }
-            _loggerIn.Info($"\nFinalizado el procesamiento de archivos en {_carpetasController.PathCarpetaIn}\n");
+            _loggerIn.Info($"--- Finalizado el procesamiento de archivos en {_carpetasController.PathCarpetaIn} ---");
         }
     }
 }

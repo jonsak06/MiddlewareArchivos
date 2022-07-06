@@ -27,7 +27,7 @@ namespace MiddlewareArchivosService.Services
                 return;
             }
 
-            _loggerOut.Info($"\nIniciado el procesamiento de archivos en {_carpetasController.PathCarpetaOut}");
+            _loggerOut.Info($"--- Iniciado el procesamiento de archivos en {_carpetasController.PathCarpetaOut} ---");
 
             foreach (var empresa in empresas)
             {
@@ -65,7 +65,7 @@ namespace MiddlewareArchivosService.Services
                 _loggerOut.Info($"No se generaron nuevos archivos en {_carpetasController.PathCarpetaOutEnProceso}");
             }
 
-            _loggerOut.Info($"\nFinalizado el procesamiento de archivos en {_carpetasController.PathCarpetaOut}\n");
+            _loggerOut.Info($"--- Finalizado el procesamiento de archivos en {_carpetasController.PathCarpetaOut} ---");
         }
     }
 }
