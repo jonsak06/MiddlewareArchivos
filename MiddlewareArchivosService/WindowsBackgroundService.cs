@@ -10,12 +10,18 @@ namespace MiddlewareArchivosService
         ConfiguracionEmpresasService _configuracionEmpresasService;
         private readonly ILogger<WindowsBackgroundService> _logger;
         private List<Empresa> empresas;
+        private readonly int _intervaloEnMinutos;
 
-        public WindowsBackgroundService(ProcesamientoInService procesamientoInService, 
-                                ProcesamientoOutService procesamientoOutService, ConfiguracionEmpresasService configuracionEmpresasService, 
-                                ILogger<WindowsBackgroundService> logger) =>
-            (_procesamientoInService, _procesamientoOutService, _configuracionEmpresasService, _logger) = 
-            (procesamientoInService, procesamientoOutService, configuracionEmpresasService, logger);
+        public WindowsBackgroundService(ProcesamientoInService procesamientoInService,
+                                ProcesamientoOutService procesamientoOutService, ConfiguracionEmpresasService configuracionEmpresasService,
+                                ILogger<WindowsBackgroundService> logger) {
+            _procesamientoInService = procesamientoInService;
+            _procesamientoOutService = procesamientoOutService;
+            _configuracionEmpresasService = configuracionEmpresasService;
+            _logger = logger;
+            _intervaloEnMinutos = int.Parse(System.Configuration.ConfigurationManager.AppSettings["IntervaloProcesamiento"]);
+        }
+            
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -28,7 +34,7 @@ namespace MiddlewareArchivosService
                     await _procesamientoOutService.ProcesarArchivosOutAsync(this.empresas);
                     _logger.LogInformation("Procesamiento finalizado");
 
-                    await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                    await Task.Delay(TimeSpan.FromMinutes(_intervaloEnMinutos), stoppingToken);
                 }
             }
             catch (Exception ex)
