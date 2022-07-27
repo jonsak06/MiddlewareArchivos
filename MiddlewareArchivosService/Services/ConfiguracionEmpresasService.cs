@@ -15,19 +15,15 @@ namespace MiddlewareArchivosService.Services
     {
         private readonly XMLProvider _provider;
         private readonly CarpetasController _carpetasController;
-        public List<Empresa> _empresas;
+        public List<Empresa> empresas;
         public ConfiguracionEmpresasService()
         {
             _provider = new XMLProvider();
-            _empresas = ConfigurarEmpresas();
+            empresas = ConfigurarEmpresas();
             _carpetasController = CarpetasController.Instance;
             CrearArchivosCtrlsec();
         }
-        public List<Empresa> GetEmpresas()
-        {
-            return _empresas;
-        }
-        public List<Empresa> ConfigurarEmpresas()
+        private List<Empresa> ConfigurarEmpresas()
         {
             XDocument xmlEmpresas = _provider.GetDocument(EnumArchivosXML.Empresas);
             return xmlEmpresas.Root.Elements().Select(e => new Empresa()
@@ -40,9 +36,9 @@ namespace MiddlewareArchivosService.Services
             }).ToList();
             
         }
-        public void CrearArchivosCtrlsec()
+        private void CrearArchivosCtrlsec()
         {
-            foreach (Empresa empresa in _empresas)
+            foreach (Empresa empresa in this.empresas)
             {
                 if (empresa.ManejaSecuencial)
                 {

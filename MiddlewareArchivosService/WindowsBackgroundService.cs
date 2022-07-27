@@ -22,7 +22,7 @@ namespace MiddlewareArchivosService
             _configuracionEmpresasService = configuracionEmpresasService;
             _logger = logger;
             _intervaloEnMinutos = int.Parse(System.Configuration.ConfigurationManager.AppSettings["IntervaloProcesamiento"]);
-            this.Empresas = _configuracionEmpresasService.GetEmpresas();
+            this.Empresas = _configuracionEmpresasService.empresas;
         }
             
 

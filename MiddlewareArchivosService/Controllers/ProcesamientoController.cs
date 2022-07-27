@@ -208,29 +208,29 @@ namespace MiddlewareArchivosService.Controllers
                 loggerOut.Info($"Generado el archivo {numeroEjecucion}.{empresa.Nombre}.{nombreInterfaz} en {this.pathCarpetaEnProcesoOut}");
 
                 //Confirmar lectura de ejecucion
-                //    endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
-                //    requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}");
+                endpoint = this.endpointProvider.getEndpointPost(this.mapper.GetNombreInterfaz(EnumInterfaces.Salida));
+                requestUri = new Uri($"{this.endpointProvider.getApiGatewayUrl()}{endpoint}");
 
-                //    using (var client = new HttpClient())
-                //    using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
-                //    {
-                //        string cont = $"{{'empresa': {empresa.Id}, 'numeroInterfazEjecucion': {numeroEjecucion}, 'codigoInterfazExterna': {codigoInterfaz}, 'resultado': true}}";
-                //        request.Content = new StringContent(cont, Encoding.UTF8, "application/json");
-                //        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
+                using (var client = new HttpClient())
+                using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
+                {
+                    string cont = $"{{'empresa': {empresa.Id}, 'numeroInterfazEjecucion': {numeroEjecucion}, 'codigoInterfazExterna': {codigoInterfaz}, 'resultado': true}}";
+                    request.Content = new StringContent(cont, Encoding.UTF8, "application/json");
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
 
-                //        using (var response = await client.SendAsync(request))
-                //        {
-                //            var details = await response.Content.ReadAsStringAsync();
-                //            if (response.IsSuccessStatusCode)
-                //            {
-                //                loggerOut.Info($"Confirmada la lectura de la ejecucion {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}");
-                //            }
-                //            else
-                //            {
-                //                loggerOut.Error($"Error al confirmar lectura de la ejecución {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}. Detalles: {details}");
-                //            }
-                //        }
-                //    }
+                    using (var response = await client.SendAsync(request))
+                    {
+                        var details = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            loggerOut.Info($"Confirmada la lectura de la ejecucion {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}");
+                        }
+                        else
+                        {
+                            loggerOut.Error($"Error al confirmar lectura de la ejecución {numeroEjecucion} de la empresa [{empresa.Id}] {empresa.Nombre}. Detalles: {details}");
+                        }
+                    }
+                }
 
             }
             return true;
